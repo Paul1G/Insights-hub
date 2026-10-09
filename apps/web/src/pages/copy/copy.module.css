@@ -1,0 +1,55 @@
+/* Cross-tenant copy wizard. Tokens only; text wraps (Layout Contract §10). */
+.checkList {
+  padding-inline: var(--theme-space-2);
+}
+
+.treeRow {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding-block: var(--theme-space--1);
+  padding-inline-end: var(--theme-space-2);
+  border-bottom: 1px solid var(--theme-color-weak-bdr);
+  box-sizing: border-box;
+}
+
+.conflictRow {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 2fr) minmax(0, 4fr);
+  gap: var(--theme-space-3);
+  align-items: start;
+  padding-block: var(--theme-space-2);
+  border-bottom: 1px solid var(--theme-color-weak-bdr);
+  min-width: 0;
+}
+
+.conflictRow:last-child {
+  border-bottom: 0;
+}
+
+.resolution {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
+  gap: var(--theme-space-2);
+  align-items: start;
+  min-width: 0;
+}
+
+.steps {
+  width: 100%;
+  min-width: 0;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .conflictRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

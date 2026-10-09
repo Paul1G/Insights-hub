@@ -1,0 +1,15 @@
+# pnpm 11 gates dependency build scripts behind explicit review. esbuild
+# (pulled transitively by tsx + vitest) has an install script; without an
+# entry here pnpm prints "Ignored build scripts… run pnpm approve-builds" and,
+# with strictDepBuilds on (default), a non-frozen install exits non-zero. pnpm
+# 11 reads this ONLY from pnpm-workspace.yaml (the package.json `pnpm` field and
+# the old ignoredBuiltDependencies key were both removed in v11).
+allowBuilds:
+  esbuild: true
+
+# Flat node_modules (real dirs, no symlink farm). The preview packer
+# (artifact.Unpack) silently drops symlinks, so the default isolated/.pnpm
+# layout would ship a broken backend/node_modules to the preview pod. pnpm 11
+# honours node-linker ONLY from this file — the preview build step's
+# `--config.node-linker=hoisted` flag is silently ignored — so it must live here.
+nodeLinker: hoisted

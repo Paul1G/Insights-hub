@@ -1,0 +1,45 @@
+/* Two panes: tree (left) and detail editor (right); stacks on narrow screens. */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--theme-space-4);
+  align-items: start;
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.treePane,
+.detailPane {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.heading {
+  margin: 0;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.search {
+  flex: 1 1 14rem;
+  min-width: 0;
+}
+
+.toolbarButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--theme-space-1);
+}

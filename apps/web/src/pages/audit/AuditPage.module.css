@@ -1,0 +1,12 @@
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--theme-space-3);
+  min-width: 0;
+}
+
+.select {
+  flex: 0 1 20rem;
+  min-width: 0;
+}

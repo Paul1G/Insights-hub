@@ -1,0 +1,17 @@
+.text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--theme-space-4);
+  min-width: 0;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--theme-space-2);
+}

@@ -1,0 +1,282 @@
+/* Shared styles of the deployment UI (deploy page, copy wizard, backup).
+   Layout Contract §10: fluid widths, min-width: 0 on text-bearing children,
+   wrapping user content, tokens only. */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-3);
+  min-width: 0;
+  width: 100%;
+}
+
+.tightStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-1);
+  min-width: 0;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.rowEnd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
+  gap: var(--theme-space-3);
+  align-items: start;
+  min-width: 0;
+}
+
+.card {
+  width: 100%;
+  min-width: 0;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-3);
+  width: 100%;
+  min-width: 0;
+}
+
+.heading {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.code {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.pre {
+  margin: 0;
+  padding: var(--theme-space-2);
+  border-radius: var(--theme-default-border-radius, 4px);
+  background: var(--theme-color-component-1);
+  color: var(--theme-color-std-text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 24rem;
+  overflow: auto;
+  min-width: 0;
+}
+
+/* Summary tiles */
+.tiles {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr));
+  gap: var(--theme-space-2);
+  align-items: stretch;
+  min-width: 0;
+}
+
+.tile {
+  width: 100%;
+  height: 100%;
+}
+
+.tileBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space--1);
+  width: 100%;
+  min-width: 0;
+}
+
+/* Virtualized tables */
+.tableWrap {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--theme-color-soft-bdr);
+  border-radius: var(--theme-default-border-radius, 4px);
+}
+
+.scroller {
+  max-height: 32rem;
+  overflow: auto;
+  position: relative;
+  min-width: 0;
+}
+
+.scrollerShort {
+  max-height: 18rem;
+  overflow: auto;
+  position: relative;
+  min-width: 0;
+}
+
+.headRow,
+.dataRow {
+  display: grid;
+  grid-template-columns: minmax(6rem, 1fr) minmax(0, 3fr) minmax(0, 2fr) minmax(0, 4fr);
+  gap: var(--theme-space-2);
+  align-items: center;
+  padding-block: var(--theme-space-1);
+  padding-inline: var(--theme-space-2);
+  min-width: 0;
+}
+
+.withStatus {
+  grid-template-columns: minmax(6rem, 1fr) minmax(0, 3fr) minmax(0, 2fr) minmax(0, 3fr) minmax(7rem, 1.4fr);
+}
+
+.headRow {
+  background: var(--theme-color-component-1);
+  border-bottom: 1px solid var(--theme-color-soft-bdr);
+}
+
+.dataRow {
+  border-bottom: 1px solid var(--theme-color-weak-bdr);
+}
+
+.dataRow:last-child {
+  border-bottom: 0;
+}
+
+.groupRow {
+  display: flex;
+  align-items: center;
+  gap: var(--theme-space-2);
+  padding-block: var(--theme-space-1);
+  padding-inline: var(--theme-space-2);
+  background: var(--theme-color-2);
+  border-bottom: 1px solid var(--theme-color-soft-bdr);
+  min-width: 0;
+}
+
+.virtualRow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.cell {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--theme-space-1);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.linkButton {
+  display: inline;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  color: var(--theme-color-primary);
+  cursor: pointer;
+  font: inherit;
+  text-align: start;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.linkButton:hover {
+  text-decoration: underline;
+}
+
+.linkButton:focus-visible {
+  outline: 2px solid var(--theme-color-focus-bdr, var(--theme-color-primary));
+  outline-offset: 2px;
+}
+
+/* Simple list rows (history, target-only objects, blockers) */
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.listItem {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--theme-space-2);
+  padding-block: var(--theme-space-1);
+  border-bottom: 1px solid var(--theme-color-weak-bdr);
+  min-width: 0;
+}
+
+.listItem:last-child {
+  border-bottom: 0;
+}
+
+.grow {
+  flex: 1 1 12rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.phaseRow {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) minmax(0, 3fr) minmax(6rem, auto);
+  gap: var(--theme-space-2);
+  align-items: center;
+  min-width: 0;
+}
+
+.progress {
+  width: 100%;
+  min-width: 0;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 720px) {
+  .headRow {
+    display: none;
+  }
+  .dataRow,
+  .withStatus {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .phaseRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

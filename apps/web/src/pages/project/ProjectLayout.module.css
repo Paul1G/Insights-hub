@@ -1,0 +1,40 @@
+/* Project toolbar above every project route. */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--theme-space-2);
+  padding-block: var(--theme-space-1);
+  padding-inline: var(--theme-space-4);
+  border-bottom: 1px solid var(--theme-color-soft-bdr);
+  background: var(--theme-color-2);
+  min-width: 0;
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: var(--theme-space-2);
+  min-width: 0;
+  flex: 1 1 16rem;
+}
+
+.name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--theme-space-1);
+  min-width: 0;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  padding: var(--theme-space-6);
+}

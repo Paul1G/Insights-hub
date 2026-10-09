@@ -1,0 +1,14 @@
+# Keep the build context lean.
+.env
+*.db
+*.db-shm
+*.db-wal
+dist/
+node_modules/
+coverage/
+.vitest-cache/
+.git/
+.idea/
+.vscode/
+README.md
+data/

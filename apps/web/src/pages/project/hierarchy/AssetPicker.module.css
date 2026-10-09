@@ -1,0 +1,72 @@
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-2);
+  min-width: 0;
+  width: 100%;
+}
+
+.list {
+  position: relative;
+  height: 40vh;
+  min-height: 12rem;
+  overflow: auto;
+  border: 1px solid var(--theme-color-soft-bdr);
+  border-radius: var(--theme-default-border-radius, 4px);
+}
+
+.list:focus-visible {
+  outline: 2px solid var(--theme-color-focus-bdr);
+  outline-offset: -2px;
+}
+
+.inner {
+  position: relative;
+  width: 100%;
+}
+
+.option {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--theme-space-1);
+  padding-inline: var(--theme-space-2);
+  box-sizing: border-box;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.option:hover {
+  background: var(--theme-color-ghost--hover);
+}
+
+.selected {
+  background: var(--theme-color-ghost--selected);
+}
+
+.list:focus-visible .active {
+  outline: 2px solid var(--theme-color-focus-bdr);
+  outline-offset: -2px;
+}
+
+.check {
+  flex: 0 0 auto;
+  display: inline-flex;
+  width: 1rem;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Fixed-height virtualised options: one line each, ellipsis for long paths. */
+.oneLine {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

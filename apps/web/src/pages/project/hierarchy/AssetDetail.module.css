@@ -1,0 +1,115 @@
+.card {
+  width: 100%;
+  min-width: 0;
+}
+
+/* ix-card-content shrinks its slot to the content width; fill the card. */
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-3);
+  width: 100%;
+  min-width: 0;
+}
+
+.breadcrumb {
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.headText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space--1);
+  min-width: 0;
+}
+
+.heading {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.panel {
+  min-width: 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-4);
+  min-width: 0;
+  padding-top: var(--theme-space-2);
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--theme-space-3);
+  align-items: start;
+  min-width: 0;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.inline {
+  display: inline;
+}
+
+.wrap {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.list {
+  margin: 0;
+  padding-inline-start: var(--theme-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-1);
+  min-width: 0;
+}
+
+.inlineRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+/* Key + file + remove on one row; wraps on narrow panels. */
+.assignment {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto;
+  gap: var(--theme-space-2);
+  align-items: end;
+  min-width: 0;
+  list-style: none;
+}
+
+@media (max-width: 640px) {
+  .assignment {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

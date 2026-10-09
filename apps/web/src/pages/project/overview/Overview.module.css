@@ -1,0 +1,315 @@
+/* Overview & health. Layout Contract §10: fluid widths, min-width: 0 on text
+   containers, wrapping content, equal-height KPI tiles; tokens only. */
+
+.wrap {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-3);
+  min-width: 0;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.toolbar > * {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.profile {
+  min-width: 16rem;
+  max-width: 24rem;
+}
+
+/* --- KPI strip (kpi-card shape) ------------------------------------------ */
+.kpiRow {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--theme-space-4);
+  align-items: stretch;
+}
+
+@media (max-width: 1280px) {
+  .kpiRow {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .kpiRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-1);
+  min-width: 0;
+  height: 100%;
+}
+
+.kpiHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.kpiIcon {
+  flex: 0 0 auto;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--theme-default-border-radius, 4px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--theme-color-primary--contrast);
+  background: var(--theme-color-primary);
+}
+
+.kpiValue {
+  display: block;
+  margin-top: var(--theme-space-1);
+}
+
+/* Feet on one baseline across the row (§10 rule 8). */
+.kpiFoot {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space--1);
+  min-width: 0;
+}
+
+.link {
+  color: var(--theme-color-primary);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* --- Meter (result-bar usage-meter) ------------------------------------- */
+.meter {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space--1);
+}
+
+.meterHead {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--theme-space-1);
+  min-width: 0;
+}
+
+.meterValue {
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* Track is a lighter step of the same ramp as the fill. */
+.track {
+  width: 100%;
+  height: 0.5rem;
+  border-radius: var(--theme-space--3);
+  background: var(--theme-color-component-1);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  border-radius: var(--theme-space--3);
+  background: var(--theme-color-primary);
+}
+
+.fillWarning {
+  background: var(--theme-color-warning);
+}
+
+.fillAlarm {
+  background: var(--theme-color-alarm);
+}
+
+/* --- Health ------------------------------------------------------------- */
+.scoreRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--theme-space-3);
+}
+
+.score {
+  display: flex;
+  align-items: baseline;
+  gap: var(--theme-space-1);
+}
+
+.good {
+  color: var(--theme-color-success);
+}
+
+.fair {
+  color: var(--theme-color-warning-text);
+}
+
+.poor {
+  color: var(--theme-color-alarm);
+}
+
+.filterChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--theme-space--1);
+}
+
+.findings {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.finding {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space--1);
+  padding-bottom: var(--theme-space-2);
+  border-bottom: 1px solid var(--theme-color-weak-bdr);
+  min-width: 0;
+}
+
+.findingHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--theme-space-1);
+  min-width: 0;
+}
+
+/* --- Estimator ---------------------------------------------------------- */
+.estimateTotals {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--theme-space-4);
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .estimateTotals {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.planActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.tableWrap {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  min-width: 44rem;
+  border-collapse: collapse;
+}
+
+.table thead th {
+  text-align: left;
+  color: var(--theme-color-soft-text);
+  font-weight: 600;
+  padding: var(--theme-space-1);
+  border-bottom: 1px solid var(--theme-color-soft-bdr);
+}
+
+.table tbody td,
+.table tbody th,
+.table tfoot td,
+.table tfoot th {
+  padding: var(--theme-space-1);
+  border-bottom: 1px solid var(--theme-color-weak-bdr);
+  text-align: left;
+  font-weight: 400;
+  vertical-align: middle;
+}
+
+.table tfoot td,
+.table tfoot th {
+  font-weight: 600;
+  border-bottom: none;
+  border-top: 1px solid var(--theme-color-soft-bdr);
+}
+
+.table th.num,
+.table td.num {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.planCol {
+  width: 12rem;
+}
+
+.cellWrap {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.typeCell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space--2);
+  min-width: 0;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--theme-space--1);
+}
+
+.alarmText {
+  color: var(--theme-color-alarm-text);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

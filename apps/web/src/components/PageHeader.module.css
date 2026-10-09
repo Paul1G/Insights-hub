@@ -1,0 +1,71 @@
+/* PageHeader — copy-once reusable page title block.
+   Reproduces the canonical page-header look: optional breadcrumb row, then a
+   bar with the title/subtitle on the left and an actions cluster (meta slot +
+   primary action) on the right. Layout Contract §10: fluid width, min-width: 0
+   on every text-bearing flex child, the title wraps on long/German strings,
+   spacing is tokens only. The bar wraps to a stacked layout when narrow so the
+   action cluster never clips the title. */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-2); /* breadcrumb -> bar */
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.breadcrumb {
+  min-width: 0;
+}
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--theme-space-3);
+  min-width: 0;
+}
+
+/* Title + subtitle. flex: 1 1 … with min-width: 0 is the load-bearing rule
+   (§10 rule 2): without it the title refuses to shrink and pushes the action
+   cluster off the row. */
+.titleZone {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-1); /* title -> subtitle */
+  flex: 1 1 18rem;
+  min-width: 0;
+}
+
+.title {
+  min-width: 0;
+  overflow-wrap: anywhere; /* §10 rule 3: long titles wrap, never clip */
+  /* The title is a real heading element carrying the h1 type ramp as a class;
+   * the iX reboot gives h1-h6 a bottom margin that the ix-typography host
+   * never had, so reset it and keep the token-driven gap of .titleZone. */
+  margin: 0;
+}
+
+.subtitle {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Right cluster: meta slot then primary action. Stays on the same baseline as
+   the title; wraps under it on narrow viewports (flex-wrap on .bar). */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--theme-space-3);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--theme-space-3);
+  flex-wrap: wrap;
+  min-width: 0;
+}

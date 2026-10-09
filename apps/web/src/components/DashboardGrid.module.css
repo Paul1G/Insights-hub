@@ -1,0 +1,31 @@
+/* DashboardGrid — copy-once responsive panel grid.
+   A 12-track CSS grid; each track is minmax(0, 1fr) so panels shrink instead of
+   clipping (Layout Contract §10 rule 2 + 7). Panels claim width by spanning
+   tracks via .span1 / .span2 / .full (see DashboardPanel.module.css).
+   align-items: stretch (the grid default, restated for intent) gives every
+   panel in a row the height of the tallest — §10 rule 8 — and each panel fills
+   its cell with height: 100%. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--theme-space-4);
+  align-items: stretch;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Below 1024px the 12-column layout would make a span-1 panel a sliver, so we
+   collapse to a 6-track grid: full stays full, span-2 stays wide, span-1
+   becomes a half. Below 640px everything stacks to a single column. */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: var(--theme-space-3);
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,83 @@
+/* DashboardPanel — copy-once panel wrapper for DashboardGrid.
+   Layout Contract §10: the cell sets its grid span; the card is width:100% +
+   height:100% so it fills the stretched cell (rule 7 + 8); min-width:0 lets
+   text shrink instead of clipping (rule 2); the header title wraps (rule 3). */
+
+/* The grid cell. .cell carries height:100% so the card can fill the stretched
+   track; the span* classes claim columns inside the 12-track DashboardGrid. */
+.cell {
+  height: 100%;
+  min-width: 0;
+}
+
+.span1 {
+  grid-column: span 3;
+}
+
+.span2 {
+  grid-column: span 6;
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+
+/* At the 6-track breakpoint a span-1 panel becomes a half, span-2 stays a half,
+   full stays full. Below 640px the grid is single-column so spans are moot. */
+@media (max-width: 1024px) {
+  .span1 {
+    grid-column: span 3;
+  }
+  .span2 {
+    grid-column: 1 / -1;
+  }
+}
+
+.card {
+  width: 100%;
+  height: 100%;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-3);
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+}
+
+/* Wrapping header row: the title grows and the action rides right, dropping
+   under the title only when the panel is very narrow. */
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  /* The title is a real heading element carrying the h4 type ramp as a class;
+   * the iX reboot gives h1-h6 a bottom margin, reset here so the panel header
+   * keeps its token-driven spacing. */
+  margin: 0;
+}
+
+.action {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--theme-space-2);
+}
+
+/* The body grows to fill the card so trailing footers in long panels sit at the
+   bottom, keeping a row of panels visually balanced. */
+.body {
+  flex: 1 1 auto;
+  min-width: 0;
+}

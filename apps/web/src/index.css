@@ -1,0 +1,104 @@
+/* WCAG 1.4.10 (Reflow) — no `width: 100vw` here.
+ * `100vw` is the viewport width *including* the classic scrollbar gutter, so as
+ * soon as a vertical scrollbar appears the document is wider than the space
+ * available and the page scrolls sideways. html/body/#root are block boxes and
+ * already fill the available width; `height` is all they actually need. */
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+#root {
+  height: 100%;
+}
+
+/* WCAG 1.4.10 (Reflow) — the old `min-width: 20rem` sat exactly on the 320 CSS px
+ * reflow limit: at a 320 px viewport the content area already scrolled sideways,
+ * and because the value is in `rem` it grows with the root font size (WCAG 1.4.4
+ * text resize: 200 % turns it into 640 px). `min()` keeps the comfortable 20rem
+ * floor wherever there is room for it and yields to the available width where
+ * there isn't, so the limit is never the thing that forces horizontal scrolling. */
+ix-content {
+  min-width: min(20rem, 100%);
+}
+
+/* The content region is the skip-link and route-change focus target (see
+ * App.tsx). It is not an interactive control — `tabindex="-1"` keeps it out of
+ * the tab order and there is nothing to operate on it — so WCAG 2.4.7, which
+ * covers components that receive focus through tabbing, does not ask for a
+ * focus ring here. Suppressing it avoids a full-width outline around the page
+ * on every navigation; the skip link itself stays highly visible. */
+ix-content[tabindex="-1"]:focus {
+  outline: none;
+}
+
+/* Visually-hidden utility — page-route <h1>s must live in light DOM for
+ * screen readers; iX content headers render their heading in shadow DOM,
+ * which assistive tech cannot reach. See lint:ix rule R9. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip link — WCAG 2.4.1 (Bypass Blocks).
+ * `ix-application` renders the <main> landmark but no skip link; without one a
+ * keyboard user passes the header, the avatar, the menu toggle and every
+ * sidebar entry before reaching the content, on every route.
+ *
+ * Hidden the same way as .visually-hidden so it costs no layout, and it is the
+ * first element in the document, so it is the first tab stop. On focus it
+ * becomes a real, visible control above the application header
+ * (--theme-z-index-toast > the header's --theme-z-index-sticky + 1). */
+.skip-link {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link:focus {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: var(--theme-z-index-toast, 1080);
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0.5rem 1rem;
+  overflow: visible;
+  clip: auto;
+  /* Theme tokens, so the link stays readable in both colour schemas:
+   * brand light 5.50:1, brand dark 10.20:1 against its own background. */
+  background-color: var(--theme-color-primary);
+  color: var(--theme-color-primary--contrast);
+  border-radius: var(--theme-default-border-radius, 0.25rem);
+  text-decoration: none;
+  outline: 2px solid var(--theme-color-focus-bdr);
+  outline-offset: 2px;
+}
+
+/* Fallback while a code-split route loads. */
+.route-loading {
+  display: flex;
+  justify-content: center;
+  padding: var(--theme-space-6);
+}
+
+/* Text areas fill their form column (the host is inline-sized by default). */
+ix-textarea {
+  display: block;
+  width: 100%;
+}

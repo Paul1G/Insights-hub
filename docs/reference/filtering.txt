@@ -1,0 +1,130 @@
+Source: https://developer.siemens.com/insights-hub/docs/apis/advanced-assetmanagement/ (retrieved 2026-10-06)
+
+Insights Hub and Industrial IoT 
+ Share 
+
+ llms optimized content 
+Insights Hub drives smart manufacturing through the industrial Internet of Things. Gain actionable insights with asset and operational data and improve your processes.Explore subscription optionsAccess Insights Hub APIs and Services
+
+Asset Management Service – Filtering¶
+All endpoints with the parameter filter support querying for filterable properties. Queries for other properties (e.g. variables, aspects) are not supported.When reading assets, all assets are filtered for main tenant and subtenant. In addition, you can supply one or more of the following field names in the filter queries (all other field names will be ignored):assetIdtenantIdnameexternalIdt2tenantsubTenanttimezonetwinTypedeletedparentIdtypeIdfileIdhasType (see also Special fields)Wildcards are not supported. Timestamps must be in the following format: 2018-01-01T00:00:00.00ZWhen a filter has no matches, the response will be empty.Filter functions¶
+Function eq (equals)¶
+{
+ "name": "MyMotor"
+}
+
+or{
+ "name": {
+ "eq": "MyMotor"
+ }
+}
+
+Function in¶
+The function in is very similar to equals, but instead matching to one value, it checks an array of values, and matches for any of them.{
+ "name": {
+ "in": {
+ "value": ["MyMotor", "MyEngine"]
+ }
+ }
+}
+
+Function endsWith¶
+{
+ "name": {
+ "endsWith": "Motor"
+ }
+}
+
+Function startsWith¶
+{
+ "name": {
+ "startsWith": "My"
+ }
+}
+
+Function contains¶
+{
+ "name": {
+ "contains": "yMot"
+ }
+}
+
+Function before¶
+{
+ "deleted": {
+ "before": "2018-01-01T00:00:00.00Z"
+ }
+}
+
+Function after¶
+{
+ "deleted": {
+ "after": "2018-01-01T00:00:00.00Z"
+ }
+}
+
+Function between¶
+{
+ "deleted": {
+ "between": "[2018-01-01T00:00:00.00Z, 2018-01-31T00:00:00.00Z)"
+ }
+}
+
+Filter operations¶
+Operation not¶
+{
+ "not": {
+ "name": {
+ "startsWith": "My"
+ }
+ }
+}
+
+or{
+ "not": {
+ "name": "MyMotor"
+ }
+}
+
+Operation or¶
+{
+ "name": {
+ "or": [{ "eq": "MyMotor" }, { "endsWith": "Motor" }]
+ }
+}
+
+or{
+ "or": {
+ "deleted": {
+ "eq": null
+ },
+ "name": {
+ "startsWith": "My"
+ }
+ }
+}
+
+Operation and¶
+{
+ "name": "MyMotor",
+ "deleted": null
+}
+
+or{
+ "and": {
+ "deleted": {
+ "eq": null
+ },
+ "name": {
+ "startsWith": "My"
+ }
+ }
+}
+
+Special fields¶
+Field hasType¶
+Using hasType you can filter for any asset type and its descendants. E.g., all assets of type core.motor or of any type which is derived from the asset type core.motor.{
+ "hasType": "core.motor"
+}
+
+NoteWhile hasType matches for any asset type in the type hierarchy, the field typeId only matches with the given asset's typeId and thus does not return descendants.

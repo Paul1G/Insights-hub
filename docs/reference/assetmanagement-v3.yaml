@@ -1,0 +1,4238 @@
+openapi: 3.0.1
+info:
+  description: Service for configuring, reading and managing assets, asset types and aspect types.
+  version: 3.19.0
+  x-visibility: external
+  title: Asset Management API
+servers:
+  - url: https://api.eu1.siemens.app/assetmanagement-1000001700/v3
+    description: Xcelerator compliant URL
+tags:
+  - name: aspecttype
+    description: Managing static and dynamic aspect types.
+  - name: assettype
+    description: Managing asset types.
+  - name: assets
+    description: Managing users' assets and their locations. Assets only can be created by types which are in three main topics;
+      device types, agent types and hierarchy types.
+  - name: structure
+    description: Managing structure of specific assets.
+  - name: locations
+    description: Managing locations.
+  - name: files
+    description: Managing files.
+  - name: assetmodellock
+    description: Managing locks on asset model
+  - name: billboard
+paths:
+  /:
+    get:
+      tags:
+        - billboard
+      summary: List all links for available resources
+      operationId: getBillboard
+      description: List all links for available resources
+      responses:
+        '200':
+          description: Array of links to available resources
+          content:
+            application/hal+json:
+              schema: &id001
+                $ref: '#/components/schemas/BillboardResource'
+            application/vnd.error+json:
+              schema: *id001
+      security:
+        - assettype:
+            - atm.r
+  /assettypes:
+    get:
+      tags:
+        - assettype
+      summary: List all asset types
+      operationId: listAssetTypes
+      description: List all asset types
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/ifNoneMatch'
+        - $ref: '#/components/parameters/exploded'
+        - $ref: '#/components/parameters/includeShared'
+      responses:
+        '200':
+          description: Array of asset types matched the tenant scope and filter criterias
+          headers:
+            ETag:
+              description: Shallow ETag of the resource
+              schema:
+                type: string
+          content:
+            application/hal+json:
+              schema: &id002
+                $ref: '#/components/schemas/AssetTypeListResource'
+            application/vnd.error+json:
+              schema: *id002
+        '304':
+          description: Asset-types page not changed
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id003
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id003
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id004
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id004
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id005
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id005
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id006
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id006
+      security:
+        - assettype:
+            - atm.r
+        - aspecttype:
+            - atm.apt.r
+  /assettypes/{id}:
+    get:
+      tags:
+        - assettype
+      summary: Read an asset type
+      operationId: getAssetType
+      description: Read an asset type
+      parameters:
+        - $ref: '#/components/parameters/ifNoneMatch'
+        - $ref: '#/components/parameters/TypeId'
+        - $ref: '#/components/parameters/exploded'
+        - $ref: '#/components/parameters/includeShared'
+      responses:
+        '200':
+          description: Returns the asset type
+          content:
+            application/hal+json:
+              schema: &id007
+                $ref: '#/components/schemas/AssetTypeResource'
+            application/vnd.error+json:
+              schema: *id007
+        '304':
+          description: AssetType not changed
+          content:
+            application/hal+json:
+              schema: &id008
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id008
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id009
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id009
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id010
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id010
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id011
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id011
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id012
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id012
+      security:
+        - assettype:
+            - atm.r
+        - aspecttype:
+            - atm.apt.r
+    put:
+      tags:
+        - assettype
+      summary: Create or Update an asset type
+      operationId: saveAssetType
+      description: "Create or Update an asset type. Complete asset type model payload should be provided in request.\n\n <b>\
+        \ Following are the updates allowed</b>\n\n* Asset type description can be updated.\n* Asset type variable's can be\
+        \ created, updated and removed. Varaible length, default Value and Unit can be changed. The unit changes from the\
+        \ API does not compute any value changes derived after the unit changes, the values will remain as it is and only\
+        \ the unit will be updated. The length can only be increased of a string variable and it cannot be decreased.\n* File\
+        \ assignments can be updated and removed.\n\n* Aspects can be created, updated and removed, please refer sample payloads\
+        \ below\n\n  * Create aspect\n        {\n          \"name\": \"leftWing\",\n          \"aspectTypeId\": \"mdsp.wing\"\
+        \n        }\n  * Update aspect <b><u>aspectId should be provided in payload</u></b> (only name can be updated)\n \
+        \     {\n             \"name\": \"rightWing\",\n             \"aspectId\": \"b9cbfc7073be4530887cdb1e71c932b8\",\n\
+        \             \"aspectTypeId\": \"mdsp.wing\"\n       }\n  * To delete an aspect, aspect should not be part of aspects\
+        \ payload\n"
+      parameters:
+        - $ref: '#/components/parameters/ifMatch'
+        - $ref: '#/components/parameters/ifNoneMatchStar'
+        - $ref: '#/components/parameters/TypeId'
+        - $ref: '#/components/parameters/exploded'
+        - $ref: '#/components/parameters/includeShared'
+      requestBody:
+        description: asset type
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetType'
+      responses:
+        '200':
+          description: The asset type has been updated
+          content:
+            application/hal+json:
+              schema: &id013
+                $ref: '#/components/schemas/AssetTypeResource'
+            application/vnd.error+json:
+              schema: *id013
+        '201':
+          description: The asset type has been created
+          content:
+            application/hal+json:
+              schema: &id014
+                $ref: '#/components/schemas/AssetTypeResource'
+            application/vnd.error+json:
+              schema: *id014
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id015
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id015
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id016
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id016
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id017
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id017
+        '412':
+          description: AssetType is changed in the background
+          content:
+            application/hal+json:
+              schema: &id018
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id018
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id019
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id019
+      security:
+        - assettype:
+            - atm.w
+        - aspecttype:
+            - atm.apt.r
+        - file:
+            - atm.fa.w
+            - atm.fa.d
+    delete:
+      tags:
+        - assettype
+      summary: Delete an asset type
+      operationId: deleteAssetType
+      description: Deletes an asset type. Deletion only possible when the type has no child-type and there is no asset that
+        instantiate it.
+      parameters:
+        - $ref: '#/components/parameters/ifMatchMandatory'
+        - $ref: '#/components/parameters/TypeId'
+        - $ref: '#/components/parameters/includeShared'
+      responses:
+        '204':
+          description: Asset type deletion was successful
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id020
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id020
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id021
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id021
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id022
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id022
+        '412':
+          description: AssetType is changed in the background
+          content:
+            application/hal+json:
+              schema: &id023
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id023
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id024
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id024
+      security:
+        - assettype:
+            - atm.d
+    patch:
+      tags:
+        - assettype
+      summary: Patch an asset type
+      operationId: updateAssetType
+      description: "Patch an asset type. Conforms to RFC 7396 - JSON merge Patch.\n<b> Following are the updates allowed</b>\n\
+        * Asset type description can be updated.\n* Asset type variable's can be created, updated and removed. Varaible length,\
+        \ default Value and Unit can be changed. The unit changes from the API does not compute any value changes derived\
+        \ after the unit changes, the values will remain as it is and only the unit will be updated. The length can only be\
+        \ increased of a string variable and it cannot be decreased.\n* File assignments can be updated and removed.\n\n*\
+        \ Aspects can be created, updated and removed, please refer sample payloads below\n\n  * Create aspect\n        {\n\
+        \          \"name\": \"leftWing\",\n          \"aspectTypeId\": \"mdsp.wing\"\n        }\n  * Update aspect, <b><u>aspectId\
+        \ should be provided in payload</u></b> (only name can be updated)\n      {\n             \"name\": \"rightWing\"\
+        ,\n             \"aspectId\": \"b9cbfc7073be4530887cdb1e71c932b8\",\n             \"aspectTypeId\": \"mdsp.wing\"\n\
+        \       }\n  * To delete an aspect, aspect should not be part of aspects payload\n"
+      parameters:
+        - $ref: '#/components/parameters/ifMatchMandatory'
+        - $ref: '#/components/parameters/TypeId'
+        - $ref: '#/components/parameters/exploded'
+        - $ref: '#/components/parameters/includeShared'
+      requestBody:
+        description: asset type
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/AssetTypePatch'
+      responses:
+        '200':
+          description: The asset type has been updated
+          content:
+            application/hal+json:
+              schema: &id025
+                $ref: '#/components/schemas/AssetTypeResource'
+            application/vnd.error+json:
+              schema: *id025
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id026
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id026
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id027
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id027
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id028
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id028
+        '404':
+          description: AssetType not found
+          content:
+            application/hal+json:
+              schema: &id029
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id029
+        '412':
+          description: AssetType is changed in the background
+          content:
+            application/hal+json:
+              schema: &id030
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id030
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id031
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id031
+      security:
+        - assettype:
+            - atm.w
+        - aspecttype:
+            - atm.apt.r
+        - file:
+            - atm.fa.w
+            - atm.fa.d
+  /assettypes/{id}/fileAssignments/{key}:
+    put:
+      tags:
+        - assettype
+      summary: Add a new file assignment to an asset type
+      operationId: saveAssetTypeFileAssignment
+      description: 'Add a new file assignment to a given asset type. All asset which extends these types will have its file
+        by default.
+
+        '
+      parameters:
+        - $ref: '#/components/parameters/ifMatchMandatory'
+        - $ref: '#/components/parameters/TypeId'
+        - $ref: '#/components/parameters/fileKey'
+        - $ref: '#/components/parameters/includeShared'
+      requestBody:
+        description: Data for file assignment
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KeyedFileAssignment'
+      responses:
+        '200':
+          description: The assignment has been updated or a new assignment has been added
+          content:
+            application/hal+json:
+              schema: &id032
+                $ref: '#/components/schemas/AssetTypeResource'
+            application/vnd.error+json:
+              schema: *id032
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id033
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id033
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id034
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id034
+        '404':
+          description: Asset type not found
+          content:
+            application/hal+json:
+              schema: &id035
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id035
+        '412':
+          description: Asset type or the file assignment has changed in the background
+          content:
+            application/hal+json:
+              schema: &id036
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id036
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id037
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id037
+      security:
+        - assettype:
+            - atm.r
+        - file:
+            - atm.fa.w
+    delete:
+      tags:
+        - assettype
+      summary: Deletes a file assignment from an asset type
+      operationId: deleteAssetTypeFileAssignment
+      description: 'Deletes a file assignment from an asset type. If the type''s parent has defined a file with the same key,
+        the key will be displayed with the inherited value.
+
+        '
+      parameters:
+        - $ref: '#/components/parameters/TypeId'
+        - $ref: '#/components/parameters/fileKey'
+        - $ref: '#/components/parameters/ifMatchMandatory'
+        - $ref: '#/components/parameters/includeShared'
+      responses:
+        '200':
+          description: The assignment has been deleted
+          content:
+            application/hal+json:
+              schema: &id038
+                $ref: '#/components/schemas/AssetTypeResource'
+            application/vnd.error+json:
+              schema: *id038
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id039
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id039
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id040
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id040
+        '404':
+          description: Asset type or key not found
+          content:
+            application/hal+json:
+              schema: &id041
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id041
+        '412':
+          description: Asset type or the file assignment has changed in the background
+          content:
+            application/hal+json:
+              schema: &id042
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id042
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id043
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id043
+      security:
+        - assettype:
+            - atm.r
+        - file:
+            - atm.fa.d
+  /assettypes/{id}/variables:
+    patch:
+      tags:
+        - assettype
+      summary: Update variables from an asset type
+      operationId: updateAssetTypeVariable
+      description: 'Updates an existing variable defined on an asset type. Variables cannot be added or deleted using this
+        operation, for adding or deleting variables use patch/put assettype api. Any variable which is not part of the request
+        will remain unchanged. Variable''s Name, Length, Default Value and Unit can be changed. The unit changes from the
+        api does not compute any value changes derived after the unit changes, the values will remain as it is and only the
+        unit will be updated. The length can only be increased of a string variable and it cannot be decreased. This operation
+        will increment the asset type etag value.
+
+        '
+      parameters:
+        - $ref: '#/components/parameters/ifMatchVariable'
+        - $ref: '#/components/parameters/TypeId'
+        - $ref: '#/components/parameters/includeShared'
+      requestBody:
+        description: Variables Dictionary, Variable Name is the key and value are the parameters to be updated of the variable.
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/VariableUpdateMap'
+      responses:
+        '204':
+          description: The variable's has been updated
+          headers:
+            ETag:
+              description: AssetType ETag value for further updates
+              schema:
+                type: integer
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id044
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id044
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id045
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id045
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id046
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id046
+        '404':
+          description: Variable not found in Asset type
+          content:
+            application/hal+json:
+              schema: &id047
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id047
+        '412':
+          description: Asset type or the variable has been changed in the background
+          content:
+            application/hal+json:
+              schema: &id048
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id048
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id049
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id049
+      security:
+        - assettype:
+            - atm.w
+  /aspecttypes:
+    get:
+      tags:
+        - aspecttype
+      summary: List all aspect types
+      operationId: listAspectTypes
+      description: List all aspect types
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/ifNoneMatch'
+        - $ref: '#/components/parameters/includeShared'
+      responses:
+        '200':
+          description: Array of aspect types matched the tenant scope and filter criterias
+          headers:
+            ETag:
+              description: Shallow ETag of the resource
+              schema:
+                type: string
+          content:
+            application/hal+json:
+              schema: &id050
+                $ref: '#/components/schemas/AspectTypeListResource'
+            application/vnd.error+json:
+              schema: *id050
+        '304':
+          description: Aspect-types page not changed
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id051
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id051
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id052
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id052
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id053
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id053
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id054
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id054
+      security:
+        - aspecttype:
+            - atm.apt.r
+  /aspecttypes/{id}:
+    get:
+      tags:
+        - aspecttype
+      summary: Read an aspect type
+      operationId: getAspectType
+      description: Read an aspect type.
+      parameters:
+        - $ref: '#/components/parameters/ifNoneMatch'
+        - $ref: '#/components/parameters/TypeId'
+        - $ref: '#/components/parameters/includeShared'
+      responses:
+        '200':
+          description: Returns the aspect type
+          content:
+            application/hal+json:
+              schema: &id055
+                $ref: '#/components/schemas/AspectTypeResource'
+            application/vnd.error+json:
+              schema: *id055
+        '304':
+          description: AspectType not changed
+          content:
+            application/hal+json:
+              schema: &id056
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id056
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id057
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id057
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id058
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id058
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id059
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id059
+        '404':
+          description: AspectType not found
+          content:
+            application/hal+json:
+              schema: &id060
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id060
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id061
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id061
+      security:
+        - aspecttype:
+            - atm.apt.r
+    put:
+      tags:
+        - aspecttype
+      summary: Create or Update an aspect type
+      operationId: saveAspectType
+      description: 'Create or Update an aspect type. Only adding variables and restricted updates on variables is supported,
+        like user can change unit details, can increase the length of a static STRING variable but length of a dynamic STRING
+        variable cannot be changed. In order to rename or remove variable, use PATCH /aspecttypes/{id}/variables api. Default
+        value field is available only for static aspect variables and not on dynamic aspect variable. Aspect type description
+        should not contain single quote character.
+
+        '
+      parameters:
+        - $ref: '#/components/parameters/ifMatch'
+        - $ref: '#/components/parameters/ifNoneMatchStar'
+        - $ref: '#/components/parameters/TypeId'
+        - $ref: '#/components/parameters/includeShared'
+      requestBody:
+        description: aspect type
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AspectType'
+      responses:
+        '200':
+          description: The aspect type has been updated
+          content:
+            application/hal+json:
+              schema: &id062
+                $ref: '#/components/schemas/AspectTypeResource'
+            application/vnd.error+json:
+              schema: *id062
+        '201':
+          description: The aspect type has been created
+          content:
+            application/hal+json:
+              schema: &id063
+                $ref: '#/components/schemas/AspectTypeResource'
+            application/vnd.error+json:
+              schema: *id063
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id064
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id064
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id065
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id065
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id066
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id066
+        '404':
+          description: AspectType not found
+          content:
+            application/hal+json:
+              schema: &id067
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id067
+        '412':
+          description: AspectType is changed in the background
+          content:
+            application/hal+json:
+              schema: &id068
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id068
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id069
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id069
+      security:
+        - aspecttype:
+            - atm.apt.w
+    delete:
+      tags:
+        - aspecttype
+      summary: Delete aspect type
+      operationId: deleteAspectType
+      description: Delete an aspect type. Aspect type can only be deleted if there is no asset type using it.
+      parameters:
+        - $ref: '#/components/parameters/ifMatchMandatory'
+        - $ref: '#/components/parameters/TypeId'
+        - $ref: '#/components/parameters/includeShared'
+      responses:
+        '204':
+          description: Aspect type deletion was successful
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id070
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id070
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id071
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id071
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id072
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id072
+        '404':
+          description: AspectType not found
+          content:
+            application/hal+json:
+              schema: &id073
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id073
+        '412':
+          description: AspectType is changed in the background
+          content:
+            application/hal+json:
+              schema: &id074
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id074
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id075
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id075
+      security:
+        - aspecttype:
+            - atm.apt.d
+        - assettype:
+            - atm.r
+    patch:
+      tags:
+        - aspecttype
+      summary: Patch an aspect type
+      operationId: updateAspectType
+      description: Patch an aspect type. Only adding variables and restricted updates on variables is supported, like user
+        can change unit details, can increase the length of a static STRING variable but length of a dynamic STRING variable
+        cannot be changed. In order to rename or remove variable use PATCH /aspecttypes/{id}/variables api. Conforms to RFC
+        7396 - JSON merge Patch.
+      parameters:
+        - $ref: '#/components/parameters/ifMatchMandatory'
+        - $ref: '#/components/parameters/TypeId'
+        - $ref: '#/components/parameters/includeShared'
+      requestBody:
+        description: aspect type
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/AspectTypePatch'
+      responses:
+        '200':
+          description: The aspect type has been updated
+          content:
+            application/hal+json:
+              schema: &id076
+                $ref: '#/components/schemas/AspectTypeResource'
+            application/vnd.error+json:
+              schema: *id076
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id077
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id077
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id078
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id078
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id079
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id079
+        '404':
+          description: AspectType not found
+          content:
+            application/hal+json:
+              schema: &id080
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id080
+        '412':
+          description: AspectType is changed in the background
+          content:
+            application/hal+json:
+              schema: &id081
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id081
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id082
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id082
+      security:
+        - aspecttype:
+            - atm.apt.w
+  /aspecttypes/{id}/variables:
+    patch:
+      tags:
+        - aspecttype
+      summary: patch aspect type variables
+      operationId: updateAspectTypeVariable
+      description: 'Updates an existing variable defined on an aspect type. Variables can be added, deleted and updated using
+        this operation. Any variable which is not part of the request will remain unchanged. All variable names must be unique
+        in a aspect type. This operation will increment the aspect type etag value.
+
+
+        <b>Following are the updates allowed on existing variables</b>
+
+        * Variable''s Name, Length, Default Value and Unit can be changed.
+
+        * The unit changes from the api does not compute any value changes derived after the unit changes, the values will
+        remain as it is and only the unit will be updated.
+
+        * The length can only be increased of a string variable and it cannot be decreased.
+
+        '
+      parameters:
+        - $ref: '#/components/parameters/ifMatchVariable'
+        - $ref: '#/components/parameters/TypeId'
+      requestBody:
+        description: 'Variables Dictionary, where variable Name is the key and value is the variable definition object.
+
+          * To update existing variable in aspect type, dictionary should contain key as variable name and value as variable
+          object with details to be updated.
+
+          * To delete variables, key should be name of the variable to be deleted and value should be null.
+
+          * To add new variables, key should be non exisiting variable name and value should be variable definition object.'
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/aspectVariableUpdateMap'
+      responses:
+        '204':
+          description: The variable's has been updated
+          headers:
+            ETag:
+              description: AspectType ETag value for further updates
+              schema:
+                type: integer
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id083
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id083
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id084
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id084
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id085
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id085
+        '404':
+          description: Variable not found in Asset type
+          content:
+            application/hal+json:
+              schema: &id086
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id086
+        '412':
+          description: Aspect type or the variable has been changed in the background
+          content:
+            application/hal+json:
+              schema: &id087
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id087
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id088
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id088
+        '503':
+          description: Service unavailable, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id089
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id089
+      security:
+        - aspecttype:
+            - atm.apt.w
+  /assets:
+    get:
+      tags:
+        - assets
+      summary: List all available assets
+      operationId: listAssets
+      description: 'List all assets available for the authenticated user. ## Filter Supports all basic fields and the ''hasType''
+        filter which search for the assets with type that originated from the given asset type. # Examples Example: This filter
+        searches for assets which type is exactly the given type: ``` { "typeId": "mandal.ship" } ``` Beyond the basic fields
+        we can search for assets which type is inherited from the given type: ``` { "hasType": "mandal.ship" } ```
+
+        '
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/ifNoneMatch'
+        - $ref: '#/components/parameters/includeShared'
+        - $ref: '#/components/parameters/basicFieldsOnly'
+      responses:
+        '200':
+          description: Array of assets matched the tenant scope and filter criterias
+          headers:
+            ETag:
+              description: The hash of the response's content
+              schema:
+                type: string
+          content:
+            application/hal+json:
+              schema: &id090
+                $ref: '#/components/schemas/AssetListResource'
+            application/vnd.error+json:
+              schema: *id090
+        '304':
+          description: The answer's content has not changed since the last request
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id091
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id091
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id092
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id092
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id093
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id093
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id094
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id094
+        '503':
+          description: Service unavailable, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id095
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id095
+      security:
+        - asset:
+            - asm.r
+        - assettype:
+            - atm.r
+        - aspecttype:
+            - atm.apt.r
+    post:
+      tags:
+        - assets
+      summary: Create an asset
+      operationId: addAsset
+      description: Creates a new asset with the provided content. Only instantiable types could be used.
+      parameters:
+        - $ref: '#/components/parameters/includeShared'
+      requestBody:
+        description: asset
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Asset'
+      responses:
+        '201':
+          description: The asset is created
+          headers:
+            Location:
+              description: URL of the created resource
+              schema:
+                type: string
+                format: uri
+          content:
+            application/hal+json:
+              schema: &id096
+                $ref: '#/components/schemas/AssetResourceWithHierarchyPath'
+            application/vnd.error+json:
+              schema: *id096
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id097
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id097
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id098
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id098
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id099
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id099
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id100
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id100
+        '503':
+          description: Service unavailable, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id101
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id101
+      security:
+        - asset:
+            - asm.c
+            - asm.h.w
+            - asm.rh.w
+        - assettype:
+            - atm.r
+        - aspecttype:
+            - atm.apt.r
+        - location:
+            - asm.loc.w
+        - file:
+            - asm.fa.w
+  /assets/{id}:
+    get:
+      tags:
+        - assets
+      summary: Returns an asset.
+      operationId: getAsset
+      description: Read a single asset. All static properties of asset are returned.
+      parameters:
+        - $ref: '#/components/parameters/uniqueId'
+        - $ref: '#/components/parameters/ifNoneMatch'
+        - $ref: '#/components/parameters/includeShared'
+      responses:
+        '200':
+          description: Returns an asset with its static properties.
+          headers:
+            ETag:
+              description: ETag hash of the resource
+              schema:
+                type: string
+          content:
+            application/hal+json:
+              schema: &id102
+                $ref: '#/components/schemas/AssetResourceWithHierarchyPath'
+            application/vnd.error+json:
+              schema: *id102
+        '304':
+          description: Resource asset is not modified
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id103
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id103
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id104
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id104
+        '404':
+          description: Not found
+          content:
+            application/hal+json:
+              schema: &id105
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id105
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id106
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id106
+        '503':
+          description: Service unavailable, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id107
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id107
+      security:
+        - asset:
+            - asm.r
+        - assettype:
+            - atm.r
+    put:
+      tags:
+        - assets
+      summary: Update an asset
+      operationId: replaceAsset
+      description: Updates an asset with the provided content. Only values can be modified, asset's structure have to be modified
+        in asset's type
+      parameters:
+        - $ref: '#/components/parameters/ifMatchMandatory'
+        - $ref: '#/components/parameters/uniqueId'
+        - $ref: '#/components/parameters/includeShared'
+      requestBody:
+        description: asset
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetUpdate'
+      responses:
+        '200':
+          description: The asset is updated
+          content:
+            application/hal+json:
+              schema: &id108
+                $ref: '#/components/schemas/AssetResourceWithHierarchyPath'
+            application/vnd.error+json:
+              schema: *id108
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id109
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id109
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id110
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id110
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id111
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id111
+        '404':
+          description: Asset not found
+          content:
+            application/hal+json:
+              schema: &id112
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id112
+        '412':
+          description: Asset is changed in the background
+          content:
+            application/hal+json:
+              schema: &id113
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id113
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id114
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id114
+        '503':
+          description: Service unavailable, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id115
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id115
+      security:
+        - asset:
+            - asm.u
+            - asm.h.w
+            - asm.rh.w
+        - file:
+            - asm.fa.w
+            - asm.fa.d
+        - assettype:
+            - atm.r
+        - aspecttype:
+            - atm.apt.r
+        - location:
+            - asm.loc.w
+    delete:
+      tags:
+        - assets
+      summary: Delete an asset
+      operationId: deleteAsset
+      description: Deletes the given asset. It's not possible to delete an asset if it has children.
+      parameters:
+        - $ref: '#/components/parameters/ifMatchMandatory'
+        - $ref: '#/components/parameters/uniqueId'
+        - $ref: '#/components/parameters/includeShared'
+      responses:
+        '204':
+          description: Asset deletion was successful
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id116
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id116
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id117
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id117
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id118
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id118
+        '404':
+          description: Asset not found
+          content:
+            application/hal+json:
+              schema: &id119
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id119
+        '412':
+          description: Asset is changed in the background
+          content:
+            application/hal+json:
+              schema: &id120
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id120
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id121
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id121
+        '503':
+          description: Service unavailable, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id122
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id122
+      security:
+        - asset:
+            - asm.d
+            - asm.h.d
+            - asm.rh.d
+    patch:
+      tags:
+        - assets
+      summary: Patch an asset
+      operationId: updateAsset
+      description: Patch an asset with the provided content. Only values can be modified, asset's structure have to be modified
+        in asset's type. Conforms to RFC 7396 - JSON merge Patch.
+      parameters:
+        - $ref: '#/components/parameters/ifMatchMandatory'
+        - $ref: '#/components/parameters/uniqueId'
+        - $ref: '#/components/parameters/includeShared'
+      requestBody:
+        description: asset
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/AssetUpdatePatch'
+      responses:
+        '200':
+          description: The asset is updated
+          content:
+            application/hal+json:
+              schema: &id123
+                $ref: '#/components/schemas/AssetResourceWithHierarchyPath'
+            application/vnd.error+json:
+              schema: *id123
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id124
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id124
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id125
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id125
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id126
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id126
+        '404':
+          description: Asset not found
+          content:
+            application/hal+json:
+              schema: &id127
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id127
+        '412':
+          description: Asset is changed in the background
+          content:
+            application/hal+json:
+              schema: &id128
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id128
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id129
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id129
+        '503':
+          description: Service unavailable, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id130
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id130
+      security:
+        - asset:
+            - asm.u
+            - asm.h.w
+            - asm.rh.w
+        - file:
+            - asm.fa.w
+            - asm.fa.d
+        - assettype:
+            - atm.r
+        - aspecttype:
+            - atm.apt.r
+        - location:
+            - asm.loc.w
+  /assets/{id}/move:
+    post:
+      tags:
+        - assets
+      summary: Move an asset
+      operationId: moveAsset
+      description: Moves an asset (and all it's children) in the instance hierarchy
+      parameters:
+        - $ref: '#/components/parameters/ifMatchMandatory'
+        - $ref: '#/components/parameters/uniqueId'
+        - $ref: '#/components/parameters/includeShared'
+      requestBody:
+        description: parameters for the asset move
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetMove'
+      responses:
+        '200':
+          description: The asset is moved
+          content:
+            application/hal+json:
+              schema: &id131
+                $ref: '#/components/schemas/AssetResourceWithHierarchyPath'
+            application/vnd.error+json:
+              schema: *id131
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id132
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id132
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id133
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id133
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id134
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id134
+        '404':
+          description: Asset not found
+          content:
+            application/hal+json:
+              schema: &id135
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id135
+        '412':
+          description: Asset is changed in the background
+          content:
+            application/hal+json:
+              schema: &id136
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id136
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id137
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id137
+        '503':
+          description: Service unavailable, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id138
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id138
+      security:
+        - asset:
+            - asm.r
+            - asm.m
+            - asm.h.w
+  /assets/{id}/variables:
+    get:
+      tags:
+        - structure
+      summary: Get all variables of an asset
+      operationId: listAssetVariables
+      description: 'Get all variables of a given asset including inherited ones
+
+        '
+      parameters:
+        - $ref: '#/components/parameters/uniqueId'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/ifNoneMatch'
+        - $ref: '#/components/parameters/includeShared'
+      responses:
+        '200':
+          description: Variables of the given asset matched by the given filter criterias
+          headers:
+            ETag:
+              description: ETag hash of the resource
+              schema:
+                type: string
+          content:
+            application/hal+json:
+              schema: &id139
+                $ref: '#/components/schemas/VariableListResource'
+            application/vnd.error+json:
+              schema: *id139
+        '304':
+          description: Resource variables have not been modified
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id140
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id140
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id141
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id141
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id142
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id142
+        '404':
+          description: Asset not found
+          content:
+            application/hal+json:
+              schema: &id143
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id143
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id144
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id144
+        '503':
+          description: Service unavailable, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id145
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id145
+      security:
+        - asset:
+            - asm.r
+        - assettype:
+            - atm.r
+  /assets/{id}/aspects:
+    get:
+      tags:
+        - structure
+      summary: Get all aspects of an asset
+      operationId: listAssetAspects
+      description: 'Get all static and dynamic aspects of a given asset
+
+        '
+      parameters:
+        - $ref: '#/components/parameters/uniqueId'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/ifNoneMatch'
+        - $ref: '#/components/parameters/includeShared'
+      responses:
+        '200':
+          description: Static and dynamic aspects of the given asset matched by the given filter criterias
+          headers:
+            ETag:
+              description: ETag hash of the resource
+              schema:
+                type: string
+          content:
+            application/hal+json:
+              schema: &id146
+                $ref: '#/components/schemas/AspectListResource'
+            application/vnd.error+json:
+              schema: *id146
+        '304':
+          description: Resource aspects have not been modified
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id147
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id147
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id148
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id148
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id149
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id149
+        '404':
+          description: Asset not found
+          content:
+            application/hal+json:
+              schema: &id150
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id150
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id151
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id151
+        '503':
+          description: Service unavailable, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id152
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id152
+      security:
+        - asset:
+            - asm.r
+        - assettype:
+            - atm.r
+        - aspecttype:
+            - atm.apt.r
+  /assets/{id}/fileAssignments/{key}:
+    put:
+      tags:
+        - assets
+      summary: Save an file assignment to an asset
+      operationId: saveAssetFileAssignment
+      description: 'Save a file assignment to a given asset
+
+        '
+      parameters:
+        - $ref: '#/components/parameters/uniqueId'
+        - $ref: '#/components/parameters/fileKey'
+        - $ref: '#/components/parameters/ifMatchMandatory'
+        - $ref: '#/components/parameters/includeShared'
+      requestBody:
+        description: Data for file assignment
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KeyedFileAssignment'
+      responses:
+        '200':
+          description: The assignment has been updated or a new assignment has been added
+          content:
+            application/hal+json:
+              schema: &id153
+                $ref: '#/components/schemas/AssetResourceWithHierarchyPath'
+            application/vnd.error+json:
+              schema: *id153
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id154
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id154
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id155
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id155
+        '404':
+          description: Asset not found
+          content:
+            application/hal+json:
+              schema: &id156
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id156
+        '412':
+          description: Asset or the file assignment has changed in the background
+          content:
+            application/hal+json:
+              schema: &id157
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id157
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id158
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id158
+        '503':
+          description: Service unavailable, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id159
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id159
+      security:
+        - asset:
+            - asm.r
+        - file:
+            - asm.fa.w
+    delete:
+      tags:
+        - assets
+      summary: Deletes a file assignment from an asset
+      operationId: deleteAssetFileAssigment
+      description: 'Deletes a file assignment from an asset. If the asset''s parent type has defined a file with the same
+        key, the key will be displayed with the inherited value.
+
+        '
+      parameters:
+        - $ref: '#/components/parameters/uniqueId'
+        - $ref: '#/components/parameters/fileKey'
+        - $ref: '#/components/parameters/ifMatchMandatory'
+        - $ref: '#/components/parameters/includeShared'
+      responses:
+        '200':
+          description: The assignment has been deleted
+          content:
+            application/hal+json:
+              schema: &id160
+                $ref: '#/components/schemas/AssetResourceWithHierarchyPath'
+            application/vnd.error+json:
+              schema: *id160
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id161
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id161
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id162
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id162
+        '404':
+          description: Asset or key not found
+          content:
+            application/hal+json:
+              schema: &id163
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id163
+        '412':
+          description: Asset or the file assignment has changed in the background
+          content:
+            application/hal+json:
+              schema: &id164
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id164
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id165
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id165
+        '503':
+          description: Service unavailable, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id166
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id166
+      security:
+        - asset:
+            - asm.r
+        - assettype:
+            - atm.r
+        - file:
+            - asm.fa.d
+  /assets/root:
+    get:
+      tags:
+        - assets
+      summary: Returns the root asset of the user.
+      operationId: getRootAsset
+      description: Read the root asset of the user, from which the whole asset hierarchy can be rebuilt.
+      parameters:
+        - $ref: '#/components/parameters/ifNoneMatch'
+      responses:
+        '200':
+          description: Returns the root asset of the user.
+          headers:
+            ETag:
+              description: ETag hash of the resource
+              schema:
+                type: string
+          content:
+            application/hal+json:
+              schema: &id167
+                $ref: '#/components/schemas/RootAssetResource'
+            application/vnd.error+json:
+              schema: *id167
+        '304':
+          description: Resource asset is not modified
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id168
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id168
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id169
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id169
+        '404':
+          description: Not found
+          content:
+            application/hal+json:
+              schema: &id170
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id170
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id171
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id171
+      security:
+        - asset:
+            - asm.r
+        - assettype:
+            - atm.r
+  /assets/{id}/location:
+    put:
+      tags:
+        - locations
+      summary: Create or Update location assigned to given asset
+      operationId: saveAssetLocation
+      description: '* If the given asset has own location, this endpoint will update that location. * If the given asset has
+        no location, this endpoint will create a new location and update the given asset. * If the given asset has inherited
+        location, this endpoint will create a new location and update the given asset. If you wanted to update the inherited
+        location you have to use the ''location'' url in AssetResource object (with PUT method).
+
+        '
+      parameters:
+        - $ref: '#/components/parameters/ifMatchMandatory'
+        - $ref: '#/components/parameters/uniqueId'
+        - $ref: '#/components/parameters/includeShared'
+      requestBody:
+        description: location
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Location'
+      responses:
+        '200':
+          description: Location has been successfully created or updated
+          content:
+            application/hal+json:
+              schema: &id172
+                $ref: '#/components/schemas/AssetResourceWithHierarchyPath'
+            application/vnd.error+json:
+              schema: *id172
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id173
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id173
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id174
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id174
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id175
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id175
+        '404':
+          description: Asset not found with given asset identifier
+          content:
+            application/hal+json:
+              schema: &id176
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id176
+        '412':
+          description: Location is changed in the background
+          content:
+            application/hal+json:
+              schema: &id177
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id177
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id178
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id178
+        '503':
+          description: Service unavailable, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id179
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id179
+      security:
+        - asset:
+            - asm.r
+        - location:
+            - asm.loc.w
+        - assettype:
+            - atm.r
+    delete:
+      tags:
+        - locations
+      summary: Delete location assigned to given asset.
+      operationId: deleteAssetLocation
+      description: '* Only those locations can be deleted here which assigned to the given asset. * If the location inherited
+        from an ancestor asset, you have to delete the location with the assigned assetId (using ‘location’ url in AssetResource
+        object with DELETE method). * The response contains the updated AssetResource with the inherited Location details.
+
+        '
+      parameters:
+        - $ref: '#/components/parameters/ifMatchMandatory'
+        - $ref: '#/components/parameters/uniqueId'
+        - $ref: '#/components/parameters/includeShared'
+      responses:
+        '200':
+          description: Location has been successfully deleted
+          content:
+            application/hal+json:
+              schema: &id180
+                $ref: '#/components/schemas/AssetResourceWithHierarchyPath'
+            application/vnd.error+json:
+              schema: *id180
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id181
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id181
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id182
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id182
+        '404':
+          description: Asset not found with given asset identifier
+          content:
+            application/hal+json:
+              schema: &id183
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id183
+        '409':
+          description: Location not assigned to the given asset
+          content:
+            application/hal+json:
+              schema: &id184
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id184
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id185
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id185
+        '503':
+          description: Service unavailable, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id186
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id186
+      security:
+        - asset:
+            - asm.r
+        - location:
+            - asm.loc.d
+  /files:
+    get:
+      tags:
+        - files
+      summary: Get metadata of uploaded files.
+      operationId: listFiles
+      description: 'Returns all visible file metadata for the tenant. Will NOT return the files.
+
+        '
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/ifNoneMatch'
+      responses:
+        '200':
+          description: Metadata of files visible for the tenant
+          content:
+            application/hal+json:
+              schema: &id187
+                $ref: '#/components/schemas/FileMetadataListResource'
+            application/vnd.error+json:
+              schema: *id187
+        '304':
+          description: Resource have not been modified
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id188
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id188
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id189
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id189
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id190
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id190
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id191
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id191
+      security:
+        - file:
+            - asm.f.r
+    post:
+      tags:
+        - files
+      summary: Upload files to be used in Asset Management.
+      operationId: uploadFile
+      description: '* Uploaded files are only visible for the uploader tenant.
+
+        * Max file size is 5 MB.
+
+        '
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The file to upload. The file size cannot be more than 5 MB.
+                name:
+                  type: string
+                  pattern: ^[^*&%\s\/\\]+$
+                  maxLength: 255
+                  description: The name of the file
+                scope:
+                  type: string
+                  enum:
+                    - public
+                    - private
+                  default: private
+                  description: The scope of the file
+                description:
+                  type: string
+                  maxLength: 255
+                  description: The description of the file
+              required:
+                - file
+                - name
+      responses:
+        '201':
+          description: File has been successfully uploaded
+          headers:
+            Location:
+              description: URL of the created resource
+              schema:
+                type: string
+                format: uri
+          content:
+            application/hal+json:
+              schema: &id192
+                $ref: '#/components/schemas/FileMetadataResource'
+            application/vnd.error+json:
+              schema: *id192
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id193
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id193
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id194
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id194
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id195
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id195
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id196
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id196
+      security:
+        - file:
+            - asm.f.w
+  /files/{fileId}/file:
+    get:
+      tags:
+        - files
+      summary: Returns a file by its id
+      operationId: downloadFile
+      description: 'Returns a file by its id
+
+        '
+      parameters:
+        - $ref: '#/components/parameters/fileId'
+      responses:
+        '200':
+          description: Returns the file
+          headers:
+            Content-Type:
+              description: The uploaded file resource's media type
+              schema:
+                type: string
+                format: Media type
+          content:
+            application/base64:
+              schema: &id197
+                type: string
+                format: binary
+                description: The requested file as a base64 encoded string or an octet-stream
+                example: QW4gZXhhbXBsZSBmaWxl
+            application/octet-stream:
+              schema: *id197
+            application/vnd.error+json:
+              schema: *id197
+        '401':
+          description: User is not authenticated
+          content:
+            application/base64:
+              schema: &id198
+                $ref: '#/components/schemas/errors'
+            application/octet-stream:
+              schema: *id198
+            application/vnd.error+json:
+              schema: *id198
+        '403':
+          description: User is not authorized for request
+          content:
+            application/base64:
+              schema: &id199
+                $ref: '#/components/schemas/errors'
+            application/octet-stream:
+              schema: *id199
+            application/vnd.error+json:
+              schema: *id199
+        '404':
+          description: File not found
+          content:
+            application/base64:
+              schema: &id200
+                $ref: '#/components/schemas/errors'
+            application/octet-stream:
+              schema: *id200
+            application/vnd.error+json:
+              schema: *id200
+        '406':
+          description: The resource cannot be represented in the format that would be acceptable to the user agent
+          content:
+            application/base64:
+              schema: &id201
+                $ref: '#/components/schemas/errors'
+            application/octet-stream:
+              schema: *id201
+            application/vnd.error+json:
+              schema: *id201
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/base64:
+              schema: &id202
+                $ref: '#/components/schemas/errors'
+            application/octet-stream:
+              schema: *id202
+            application/vnd.error+json:
+              schema: *id202
+      security:
+        - file:
+            - asm.f.r
+  /files/{fileId}:
+    get:
+      tags:
+        - files
+      summary: Returns a file's metadata by its id
+      operationId: getFile
+      description: 'Returns a file''s metadata by its id
+
+        '
+      parameters:
+        - $ref: '#/components/parameters/fileId'
+        - $ref: '#/components/parameters/ifNoneMatch'
+      responses:
+        '200':
+          description: Returns the file's metadata
+          content:
+            application/hal+json:
+              schema: &id203
+                $ref: '#/components/schemas/FileMetadataResource'
+            application/vnd.error+json:
+              schema: *id203
+        '304':
+          description: Resource have not been modified
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id204
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id204
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id205
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id205
+        '404':
+          description: File not found
+          content:
+            application/hal+json:
+              schema: &id206
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id206
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id207
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id207
+      security:
+        - file:
+            - asm.f.r
+    put:
+      tags:
+        - files
+      summary: Update a file
+      operationId: replaceFile
+      description: 'Update a previously uploaded file
+
+        * Max file size is 5 MB.
+
+        '
+      parameters:
+        - $ref: '#/components/parameters/ifMatchMandatory'
+        - $ref: '#/components/parameters/fileId'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The file to upload. The file size cannot be more than 5 MB.
+                name:
+                  type: string
+                  pattern: ^[^*&%\s\/\\]+$
+                  maxLength: 255
+                  description: The name of the file
+                scope:
+                  type: string
+                  enum:
+                    - public
+                    - private
+                  default: private
+                  description: The scope of the file
+                description:
+                  type: string
+                  maxLength: 255
+                  description: The description of the file
+              required:
+                - file
+                - name
+                - scope
+      responses:
+        '200':
+          description: File has been successfully updated
+          content:
+            application/hal+json:
+              schema: &id208
+                $ref: '#/components/schemas/FileMetadataResource'
+            application/vnd.error+json:
+              schema: *id208
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id209
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id209
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id210
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id210
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id211
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id211
+        '404':
+          description: File not found
+          content:
+            application/hal+json:
+              schema: &id212
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id212
+        '412':
+          description: File is changed in the background
+          content:
+            application/hal+json:
+              schema: &id213
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id213
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id214
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id214
+      security:
+        - file:
+            - asm.f.w
+    delete:
+      tags:
+        - files
+      summary: Delete a file.
+      operationId: deleteFile
+      description: '* Deletion is blocked if there are any file assignment with the given fileId.
+
+        '
+      parameters:
+        - $ref: '#/components/parameters/ifMatchMandatory'
+        - $ref: '#/components/parameters/fileId'
+      responses:
+        '204':
+          description: File has been successfully deleted
+        '400':
+          description: Invalid request
+          content:
+            application/hal+json:
+              schema: &id215
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id215
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id216
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id216
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id217
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id217
+        '404':
+          description: File not found
+          content:
+            application/hal+json:
+              schema: &id218
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id218
+        '412':
+          description: File changed in the background
+          content:
+            application/hal+json:
+              schema: &id219
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id219
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id220
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id220
+      security:
+        - file:
+            - asm.f.d
+  /model/lock:
+    get:
+      tags:
+        - assetmodellock
+      summary: Returns lock state of an asset model.
+      operationId: getAssetModelLock
+      description: Provides lock state of an asset model at tenant level.
+      responses:
+        '200':
+          description: Returns lock state of an asset model and associated jobs.
+          content:
+            application/hal+json:
+              schema: &id221
+                $ref: '#/components/schemas/AssetModelLock'
+            application/vnd.error+json:
+              schema: *id221
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id222
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id222
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id223
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id223
+        '429':
+          description: Too Many Requests
+          content:
+            application/hal+json:
+              schema: &id224
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id224
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id225
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id225
+      security:
+        - assetmodel:
+            - aml.r
+    put:
+      tags:
+        - assetmodellock
+      summary: Enable/disable lock state of an asset model.
+      operationId: putAssetModelLock
+      description: Enable/disable lock state of asset model at tenant level, managing restrictions on update/delete operations
+        on assettypes and aspecttypes.
+      parameters:
+        - name: enabled
+          in: query
+          description: Lock state of an asset model
+          required: true
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Returns lock state of an asset model applied on a tenant.
+          content:
+            application/hal+json:
+              schema: &id226
+                $ref: '#/components/schemas/ModelLock'
+            application/vnd.error+json:
+              schema: *id226
+        '401':
+          description: User is not authenticated
+          content:
+            application/hal+json:
+              schema: &id227
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id227
+        '403':
+          description: User is not authorized for request
+          content:
+            application/hal+json:
+              schema: &id228
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id228
+        '412':
+          description: Precondition Failed
+          content:
+            application/hal+json:
+              schema: &id229
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id229
+        '429':
+          description: Too Many Requests
+          content:
+            application/hal+json:
+              schema: &id230
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id230
+        '500':
+          description: Server error, for more information see errorcode and message
+          content:
+            application/hal+json:
+              schema: &id231
+                $ref: '#/components/schemas/errors'
+            application/vnd.error+json:
+              schema: *id231
+      security:
+        - assetmodel:
+            - aml.w
+components:
+  schemas:
+    AssetTypeBase:
+      type: object
+      required:
+        - name
+        - parentTypeId
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 128
+          pattern: '[\p{L}_0-9_\. ]+'
+          description: The type's name.
+          example: X_Wing
+        description:
+          type: string
+          description: description
+          maxLength: 255
+          example: Hyperspace jump capable space ship
+        parentTypeId:
+          $ref: '#/components/schemas/AssetTypeId'
+        instantiable:
+          type: boolean
+          default: true
+          example: true
+          description: If instances can be created from this type. A instantiable type
+            could not be changed to be non-instantiable.
+        scope:
+          type: string
+          enum:
+            - public
+            - private
+          default: private
+          example: private
+          description: Visibility of the assettype. Setting this property to public makes it available to other tenants. Private
+            types are only visible to the user's own tenant. Currently only private types could be created.
+    AssetTypeBasePatch:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 128
+          pattern: '[\p{L}_0-9_\. ]+'
+          description: The type's name.
+          example: X_Wing
+        description:
+          type: string
+          description: description
+          maxLength: 255
+          example: Hyperspace jump capable space ship
+        parentTypeId:
+          $ref: '#/components/schemas/AssetTypeId'
+        instantiable:
+          type: boolean
+          default: true
+          example: true
+          description: If instances can be created from this type. A non-instantiable type could be changed to be instantiable
+            but not the other way around.
+        scope:
+          type: string
+          enum:
+            - public
+            - private
+          default: private
+          example: private
+          description: 'Visibility of the assettype. Setting this property to public makes it available to other tenants.
+            Private types are only visible to the user''s own tenant. Currently only private types could be created.        '
+    AssetTypePatch:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AssetTypeBasePatch'
+        - properties:
+            aspects:
+              type: array
+              description: Aspects of the asset-type.
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    minLength: 1
+                    maxLength: 64
+                    pattern: '[a-zA-Z0-9_]+'
+                    example: leftWing
+                    description: Name of the aspect. It has to be unique inside the type-family (ancestors and descendants).
+                      Reserved words (id, name, description, tenant, etag, scope, properties, propertySets, extends, variables,
+                      aspects, parentTypeId) cannot be used as aspect names.
+                  aspectId:
+                    $ref: '#/components/schemas/AspectId'
+                  aspectTypeId:
+                    $ref: '#/components/schemas/AspectTypeId'
+            variables:
+              type: array
+              description: Direct variables of the asset-type. Variable names has to be unique inside the whole type-family
+                (ancestors and descendants). Once added variables cannot be changed or removed.
+              items:
+                $ref: '#/components/schemas/VariableDefinition'
+            fileAssignments:
+              type: array
+              items:
+                $ref: '#/components/schemas/FileAssignment'
+    AssetType:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AssetTypeBase'
+        - properties:
+            aspects:
+              type: array
+              description: Aspects of the asset-type.
+              items:
+                type: object
+                required:
+                  - name
+                  - aspectTypeId
+                properties:
+                  name:
+                    type: string
+                    minLength: 1
+                    maxLength: 64
+                    pattern: '[a-zA-Z0-9_]+'
+                    example: leftWing
+                    description: Name of the aspect. It has to be unique inside the type-family (ancestors and descendants).
+                      Reserved words (id, name, description, tenant, etag, scope, properties, propertySets, extends, variables,
+                      aspects, parentTypeId) cannot be used as aspect names.
+                  aspectId:
+                    $ref: '#/components/schemas/AspectId'
+                  aspectTypeId:
+                    $ref: '#/components/schemas/AspectTypeId'
+            variables:
+              type: array
+              description: Direct variables of the asset-type. Variable names has to be unique inside the whole type-family
+                (ancestors and descendants). Once added variables cannot be changed or removed.
+              items:
+                $ref: '#/components/schemas/VariableDefinition'
+            fileAssignments:
+              type: array
+              items:
+                $ref: '#/components/schemas/FileAssignment'
+    AssetTypeResource:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AssetTypeBase'
+        - properties:
+            id:
+              $ref: '#/components/schemas/AssetTypeId'
+            tenantId:
+              $ref: '#/components/schemas/tenantId'
+            etag:
+              $ref: '#/components/schemas/ETag'
+            aspects:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: Name of the aspect type, it must be unique for the asset type.
+                    example: leftWing
+                  aspectId:
+                    $ref: '#/components/schemas/AspectId'
+                  aspectType:
+                    allOf:
+                      - $ref: '#/components/schemas/AspectTypeResource'
+                  _links:
+                    type: object
+                    properties:
+                      origin:
+                        type: object
+                        properties:
+                          href:
+                            type: string
+                            description: Link to the asset type defining the aspect. *Only visible if aspect is inherited.*
+            variables:
+              type: array
+              description: Direct variables of the asset-type. Variable names has to be unique inside the whole type-family
+                (ancestors and descendants). Once added variables cannot be changed or removed.
+              items:
+                $ref: '#/components/schemas/VariableDefinitionResource'
+            fileAssignments:
+              type: array
+              items:
+                $ref: '#/components/schemas/FileAssignmentResource'
+            sharing:
+              $ref: '#/components/schemas/SharingResource'
+            _links:
+              $ref: '#/components/schemas/AssetTypeLinks'
+    AssetTypeLinks:
+      type: object
+      properties:
+        self:
+          $ref: '#/components/schemas/rel.self'
+        parent:
+          type: object
+          properties:
+            href:
+              type: string
+              format: uri
+              description: Link to the parent asset type
+    AspectType:
+      type: object
+      required:
+        - name
+        - category
+        - scope
+        - variables
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 128
+          pattern: '[a-zA-Z0-9_]+'
+          description: Name of the aspect type. It has to be unique inside the tenant and cannot be changed later.
+          example: engine
+        category:
+          type: string
+          enum:
+            - static
+            - dynamic
+          description: If the aspect-type is used for static data or time-series. Cannot be changed once the aspect-type is
+            created.
+        scope:
+          type: string
+          enum:
+            - public
+            - private
+          default: private
+          example: private
+          description: Visibility of aspecttype. Setting this property to public makes it available to other tenants. Private
+            types are only visible to the user's own tenant. Currently only private types can be created.
+        description:
+          type: string
+          maxLength: 255
+          pattern: '[^\'']*'
+          description: The description of the aspect type
+          example: The engine of the Millenium Falcon
+        variables:
+          type: array
+          minItems: 1
+          description: Variables of the aspect-type. Variable names should be unique inside an aspect-type.
+          items:
+            $ref: '#/components/schemas/AspectVariable'
+    AspectTypePatch:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 128
+          pattern: '[a-zA-Z0-9_]+'
+          description: Name of the aspect type. It has to be unique inside the tenant and cannot be changed later.
+          example: engine
+        category:
+          type: string
+          enum:
+            - static
+            - dynamic
+          description: If the aspect-type is used for static data or time-series. Cannot be changed once the aspect-type is
+            created.
+        scope:
+          type: string
+          enum:
+            - public
+            - private
+          default: private
+          example: private
+          description: Visibility of aspecttype. Setting this property to public makes it available to other tenants. Private
+            types are only visible to the user's own tenant. Currently only private types can be created.
+        description:
+          type: string
+          maxLength: 255
+          pattern: '[^\'']*'
+          description: The description of the aspect type
+          example: The engine of the Millenium Falcon
+        variables:
+          type: array
+          minItems: 1
+          description: Variables of the aspect-type. Variable names should be unique inside an aspect-type.
+          items:
+            $ref: '#/components/schemas/AspectVariable'
+    AspectTypeResource:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AspectType'
+        - properties:
+            id:
+              $ref: '#/components/schemas/AspectTypeId'
+            tenantId:
+              $ref: '#/components/schemas/tenantId'
+            etag:
+              $ref: '#/components/schemas/ETag'
+            sharing:
+              $ref: '#/components/schemas/SharingResource'
+            _links:
+              $ref: '#/components/schemas/AspectTypeLinks'
+    AspectTypeLinks:
+      type: object
+      properties:
+        self:
+          $ref: '#/components/schemas/rel.self'
+    uniqueId:
+      type: string
+      pattern: '[0-9a-f]+'
+      minLength: 32
+      maxLength: 32
+      example: c27a28b6eb16b507fabc11e75da8b4ce
+    Asset:
+      type: object
+      required:
+        - typeId
+        - parentId
+      allOf:
+        - $ref: '#/components/schemas/AssetUpdate'
+        - properties:
+            typeId:
+              $ref: '#/components/schemas/AssetTypeId'
+            parentId:
+              $ref: '#/components/schemas/uniqueId'
+            timezone:
+              $ref: '#/components/schemas/timezone'
+            twinType:
+              $ref: '#/components/schemas/twinType'
+    twinType:
+      type: string
+      description: Indicates that the asset is a real asset (performance) or for simulation. If omitted on creation then it
+        defaults to performance. Setting the twinType to simulation allows high resolution timestamps (microsecond precision).
+      enum:
+        - performance
+        - simulation
+      default: performance
+    AssetUpdate:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 128
+          pattern: '[^\/\\]*'
+          description: Name of the asset
+          example: Millenium Falcon
+        externalId:
+          type: string
+          description: The id given by the user
+          maxLength: 255
+          example: SN 123456-123-123456
+        description:
+          type: string
+          description: The description of the asset
+          maxLength: 255
+          pattern: '[^'']*'
+          example: The ship of Han Solo and Chewbacca
+        location:
+          $ref: '#/components/schemas/Location'
+        variables:
+          type: array
+          items:
+            $ref: '#/components/schemas/Variable'
+        aspects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Aspect'
+        fileAssignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileAssignment'
+    AssetUpdatePatch:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 128
+          pattern: '[^\/\\]*'
+          description: Name of the asset
+          example: Millenium Falcon
+        externalId:
+          type: string
+          description: The id given by the user
+          maxLength: 255
+          example: SN 123456-123-123456
+        description:
+          type: string
+          description: The description of the asset
+          maxLength: 255
+          pattern: '[^'']*'
+          example: The ship of Han Solo and Chewbacca
+        location:
+          $ref: '#/components/schemas/Location'
+        variables:
+          type: array
+          items:
+            $ref: '#/components/schemas/Variable'
+        aspects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Aspect'
+        fileAssignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileAssignment'
+    AssetMove:
+      type: object
+      required:
+        - newParentId
+      properties:
+        newParentId:
+          $ref: '#/components/schemas/uniqueId'
+    AssetResource:
+      allOf:
+        - $ref: '#/components/schemas/Asset'
+        - properties:
+            tenantId:
+              $ref: '#/components/schemas/tenantId'
+            subTenant:
+              type: string
+              description: The id of the end-customer.
+              maxLength: 255
+              example: UnkarPlutt Inc.
+            t2Tenant:
+              type: string
+              description: The id of the end-customer. This field is DEPRECATED please use subTenant instead.
+              maxLength: 255
+              example: 'DEPRECATED: use subTenant instead'
+            assetId:
+              $ref: '#/components/schemas/uniqueId'
+            fileAssignments:
+              type: array
+              items:
+                $ref: '#/components/schemas/FileAssignmentResource'
+            locks:
+              type: array
+              items:
+                $ref: '#/components/schemas/LockResource'
+            deleted:
+              type: string
+              format: date-time
+            twinType:
+              type: string
+              enum:
+                - performance
+                - simulation
+              default: performance
+            sharing:
+              $ref: '#/components/schemas/SharingResource'
+            etag:
+              $ref: '#/components/schemas/ETag'
+            _links:
+              $ref: '#/components/schemas/AssetLinks'
+    RootAssetResource:
+      allOf:
+        - $ref: '#/components/schemas/AssetResource'
+        - properties:
+            hierarchyPath:
+              type: array
+              items:
+                type: string
+              example: []
+              description: Hieararchy path is empty for the root asset
+    AssetResourceWithHierarchyPath:
+      allOf:
+        - $ref: '#/components/schemas/AssetResource'
+        - properties:
+            hierarchyPath:
+              type: array
+              items:
+                type: object
+                properties:
+                  assetId:
+                    $ref: '#/components/schemas/uniqueId'
+                  name:
+                    type: string
+                    description: Name of the asset
+                    example: Millenium Falcon's parent
+    SharingResource:
+      type: object
+      description: Contains sharing information.
+      properties:
+        modes:
+          type: array
+          description: List of sharing modes applicable for this resource. The currently supported modes are SHARER and RECEIVER.
+            SHARER means this resource is shared by my tenant. RECEIVER means this resource is shared with my tenant. An empty
+            array means this resource is not shared. New modes might be introduced later and clients must expect additional
+            items to be contained in the array.
+          items:
+            type: string
+            enum:
+              - SHARER
+              - RECEIVER
+    AssetLinks:
+      type: object
+      properties:
+        self:
+          type: object
+          properties:
+            href:
+              type: string
+              format: uri
+              description: URL to get the asset
+        parent:
+          type: object
+          properties:
+            href:
+              type: string
+              format: uri
+              description: URL to get the parent of the asset
+        children:
+          type: object
+          properties:
+            href:
+              type: string
+              format: uri
+              description: URL to get the children of the asset
+        variables:
+          type: object
+          properties:
+            href:
+              type: string
+              format: uri
+              description: URL to get the variable definitions of the asset
+        aspects:
+          type: object
+          properties:
+            href:
+              type: string
+              format: uri
+              description: URL to get the aspect structure of the asset
+        t2Tenant:
+          type: object
+          properties:
+            href:
+              type: string
+              format: uri
+              description: URL to get the end-customer of the asset
+        location:
+          type: object
+          properties:
+            href:
+              type: string
+              format: uri
+              description: URL to update or delete the location of the asset
+    Location:
+      type: object
+      properties:
+        country:
+          type: string
+          maxLength: 255
+          example: Austria
+        region:
+          type: string
+          description: County or other region code or name
+          maxLength: 255
+          example: Tyrol
+        locality:
+          type: string
+          maxLength: 255
+          pattern: '[\p{L}0-9_ -\'']*'
+          example: Innsbruck
+        streetAddress:
+          type: string
+          maxLength: 255
+          example: Industriestraße 21 A/II
+        postalCode:
+          type: string
+          maxLength: 255
+          example: '6020'
+        longitude:
+          type: number
+          description: The longitude part of the geographic coordinates
+          minimum: -180
+          maximum: 180
+          example: 53.5125546
+        latitude:
+          type: number
+          description: The latitude part of the geographic coordinates
+          minimum: -90
+          maximum: 90
+          example: 9.9763411
+    LockResource:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/uniqueId'
+        service:
+          type: string
+          description: Service creating the lock
+          example: AgentManagement
+        reason:
+          type: string
+          description: Reason of lock
+          example: Agent is onboarded, cannot delete asset until offboard finished
+        reasonCode:
+          type: string
+          description: Code of the reason
+          example: agentmanagement.agent.onboarded
+        _links:
+          type: object
+          properties:
+            self:
+              $ref: '#/components/schemas/rel.self'
+    FileAssignmentResource:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/FileAssignment'
+        - properties:
+            _links:
+              $ref: '#/components/schemas/FileAssignmentLinks'
+    AspectVariable:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/VariableDefinition'
+        - properties:
+            qualityCode:
+              type: boolean
+              default: false
+              description: Indicates whether the variable has quality code. Cannot be changed.
+              example: true
+    Aspect:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 64
+          pattern: '[a-zA-Z0-9_]+'
+          example: astroDroid
+        variables:
+          type: array
+          items:
+            $ref: '#/components/schemas/Variable'
+    AspectResource:
+      type: object
+      required:
+        - name
+      properties:
+        aspectTypeId:
+          type: string
+          description: ID of the Aspect type
+          example: tenant.asp.engine
+        holderAssetId:
+          $ref: '#/components/schemas/uniqueId'
+        name:
+          type: string
+          pattern: '[a-zA-Z0-9_]+'
+          description: Name of the aspect
+          example: engine
+        aspectId:
+          $ref: '#/components/schemas/AspectId'
+        category:
+          type: string
+          enum:
+            - dynamic
+            - static
+        description:
+          type: string
+          pattern: '[^\'']*'
+          description: The description of the aspect
+          example: The engine of the Millenium Falcon
+        variables:
+          type: array
+          items:
+            $ref: '#/components/schemas/AspectVariable'
+        _links:
+          $ref: '#/components/schemas/AspectLinks'
+    AspectLinks:
+      type: object
+      properties:
+        self:
+          type: object
+          properties:
+            href:
+              type: string
+              format: uri
+              description: Link to the aspect
+        asset:
+          type: object
+          properties:
+            href:
+              type: string
+              format: uri
+              description: Link to the asset
+        aspectType:
+          type: object
+          properties:
+            href:
+              type: string
+              format: uri
+              description: Link to the origin aspect type of the aspect
+    FileAssignmentLinks:
+      type: object
+      properties:
+        download:
+          type: object
+          properties:
+            href:
+              type: string
+              format: uri
+              description: Link to download the file
+        metadata:
+          type: object
+          properties:
+            href:
+              type: string
+              format: uri
+              description: Link to get metadata of the file
+        origin:
+          type: object
+          properties:
+            href:
+              type: string
+              format: uri
+              description: Link to access the file assignment. Only visible if assignment is inherited
+    Variable:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 64
+          pattern: '[a-zA-Z0-9_]+'
+          example: color
+        value:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: yellow
+    VariableUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 64
+          pattern: '[a-zA-Z_][a-zA-Z0-9_]*'
+          description: Name of the variable. Reserved words (id, name, description, tenant, etag, scope, properties, propertySets,
+            extends, variables, aspects, parentTypeId) cannot be used as variable names.
+          example: temperature
+        unit:
+          type: string
+          maxLength: 32
+          pattern: '[^\'']*'
+          description: Unit of measurement. Can be changed
+          example: C/F
+        length:
+          type: integer
+          minimum: 1
+          maximum: 100000
+          description: The max length of the variable's value. The length field is only used for variables of string or big_string
+            dataType. Max length for string is 255 and max length for big_string 100000. Cannot be changed.
+          example: 5
+        defaultValue:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: The default value of the variable. It must be compatible with the dataType! The default value will
+            be inherited by the asset type's child types and by the asset instantiating it. It can be defined in aspect types
+            and asset types.
+          example: 25/77
+    VariableDefinition:
+      allOf:
+        - $ref: '#/components/schemas/VariableUpdate'
+      required:
+        - name
+        - dataType
+      properties:
+        dataType:
+          type: string
+          enum:
+            - BOOLEAN
+            - INT
+            - LONG
+            - DOUBLE
+            - STRING
+            - TIMESTAMP
+            - BIG_STRING
+          description: Data type of the variable. BIG_STRING could only be used by variables in dynamic aspect-types. Cannot
+            be changed.
+          example: STRING
+        searchable:
+          type: boolean
+          default: false
+          description: Indicates whether sorting and filtering is allowed on this variable. Only usable for static properties.
+            Cannot be changed.
+          example: true
+    VariableDefinitionResource:
+      allOf:
+        - $ref: '#/components/schemas/VariableDefinition'
+        - properties:
+            _links:
+              properties:
+                origin:
+                  description: Link to the asset type defining the variable. *Only visible if variable is inherited.*
+                  properties:
+                    href:
+                      type: string
+    aspectVariableUpdateMap:
+      additionalProperties:
+        $ref: '#/components/schemas/VariableDefinition'
+      example:
+        temperature:
+          name: engine_temperature
+          unit: C/F
+          length: 5
+          defaultValue: 25/77
+          dataType: STRING
+          searchable: true
+          qualityCode: true
+        newVariable:
+          name: newVariable
+          unit: C/F
+          length: 5
+          defaultValue: 25/77
+          dataType: STRING
+          searchable: true
+          qualityCode: true
+        removeVariable: null
+    VariableUpdateMap:
+      additionalProperties:
+        $ref: '#/components/schemas/VariableUpdate'
+      example:
+        temperature:
+          name: engine_temperature
+          unit: C/F
+          length: 5
+          defaultValue: 25/77
+    KeyedFileAssignment:
+      type: object
+      properties:
+        fileId:
+          type: string
+          description: The id of the file to be assigned
+          example: c27a28b6eb16b507fabc11e75da8b4ce
+    FileAssignment:
+      type: object
+      properties:
+        key:
+          type: string
+          pattern: '[\w]+'
+          example: logo_small
+          description: Keyword for the file to be assigned to an asset.
+        fileId:
+          type: string
+          example: c27a28b6eb16b507fabc11e75da8b4ce
+          description: The id of the file to be assigned
+    FileMetadataResource:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/uniqueId'
+        name:
+          type: string
+          description: File name given by the user
+          example: logo
+        originalFileName:
+          type: string
+          description: Original filename of the file
+          example: logo_small.png
+        description:
+          type: string
+          description: File description
+          example: Company logo
+        tenantId:
+          $ref: '#/components/schemas/tenantId'
+        subTenant:
+          type: string
+          description: The id of the end-customer
+          example: UnkarPlutt Inc.
+        uploaded:
+          description: The time of the file upload
+          type: string
+          format: date-time
+        lastModified:
+          description: The time of the latest modification of the file
+          type: string
+          format: date-time
+        isAssigned:
+          description: Is the file used in any file assignment
+          type: boolean
+          example: false
+        scope:
+          type: string
+          enum:
+            - public
+            - private
+          default: private
+          example: private
+          description: The visibility of the file. PRIVATE hides files between subTenants and the t1Tenant's files from the
+            subTenants. PUBLIC is visible for every user of the tenant.
+        etag:
+          $ref: '#/components/schemas/ETag'
+        _links:
+          type: object
+          properties:
+            self:
+              $ref: '#/components/schemas/rel.self'
+            download:
+              title: link for downloading the file
+              properties:
+                href:
+                  type: string
+    tenantId:
+      type: string
+      pattern: '[a-zA-Z0-9-_.]+'
+      maxLength: 255
+      description: The unique identifier of the tenant
+      example: mdsp
+    enabled:
+      type: boolean
+      description: Describes the state of model lock
+      example: true
+    jobs:
+      type: array
+      items:
+        type: string
+      description: Describes Jobs associtated with Model Lock
+      example:
+        - mdsp-import-md33d31
+    timezone:
+      type: string
+      maxLength: 255
+      description: The timezone to be used for timeseries aggregation. By default it is inherited from the tenant's defaultTimezone,
+        but can be overwritten only during asset creation. The timezone value should be set to a Java time zone ID such as
+        "America/LosAngeles" or "Etc/GMT+2". Time zones that 15 or 45 minutes off a UTC hour are not supported, such as Nepal
+        standard time (UTC+05:45). Time zones that are 30 minutes off a UTC hour are supported, such as India (UTC+05:30).
+        Once an asset is created with a specific timezone, it cannot be changed later.
+      example: Europe/Berlin
+    AssetTypeId:
+      type: string
+      minLength: 1
+      maxLength: 128
+      pattern: '[A-Za-z0-9_]{1,8}\.[A-Za-z0-9_]+'
+      description: |
+        The asset type's id is a unique identifier. The id's length must be between 1 and 128 characters and matches
+        the following symbols "A-Z", "a-z", "0-9", "_" and "." beginning with the tenant name what has a maximum of 8 characters.
+        (e.g . tenant_name.type_id). Once set cannot be changed.
+
+        **Note:** tenant name is the name of tenant can be obtained using TenantManagements /tenantInfo API [TM API Link](https://documentation.mindsphere.io/MindSphere/apis-xcelerator/core-tenantmanagement/api-tenantmanagement-api.html).
+      example: mdsp.spaceship
+    AspectId:
+      type: string
+      description: Aspect id is an internal id of an aspect associated with an asset type.
+      example: b9cbfc7073be4530887cdb1e71c932b8
+    AspectTypeId:
+      type: string
+      minLength: 1
+      maxLength: 128
+      pattern: '[A-Za-z0-9_]{1,8}\.[A-Za-z0-9_]+'
+      description: |
+        The aspect type's id is a unique identifier. The id's length must be between 1 and 128 characters and matches
+        the following symbols "A-Z", "a-z", "0-9", "_" and "." beginning with the tenant name what has a maximum of 8 characters.
+        (e.g . tenant_name.type_id). Once set cannot be changed.
+
+        **Note:** tenant name is the name of tenant can be obtained using TenantManagements /tenantInfo API [TM API Link](https://documentation.mindsphere.io/MindSphere/apis-xcelerator/core-tenantmanagement/api-tenantmanagement-api.html).
+      example: mdsp.wing
+    Page:
+      type: object
+      properties:
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        number:
+          type: integer
+    PagingLinks:
+      type: object
+      properties:
+        self:
+          $ref: '#/components/schemas/rel.self'
+        first:
+          type: object
+          title: link to first page
+          properties:
+            href:
+              type: string
+        prev:
+          type: object
+          title: link to previous page
+          properties:
+            href:
+              type: string
+        next:
+          type: object
+          title: link to next page
+          properties:
+            href:
+              type: string
+        last:
+          type: object
+          title: link to last page
+          properties:
+            href:
+              type: string
+    rel.self:
+      type: object
+      title: self link
+      properties:
+        href:
+          type: string
+    errors:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+              errorcode:
+                type: string
+              logref:
+                type: string
+              message:
+                type: string
+            example:
+              code: assetmngmnt.code
+              errorcode: assetmngmnt.errorcode
+              logref: c27a28b6eb16b507fabc11e75da8b4ce
+              message: Some meaningful message about the problems origin
+    ETag:
+      type: integer
+      description: incremental counter for optimistic locking
+      example: 1
+    BillboardResource:
+      type: object
+      properties:
+        self:
+          type: object
+          properties:
+            href:
+              type: string
+              format: uri
+              description: Link to the billboard url
+        aspectTypes:
+          type: object
+          properties:
+            href:
+              type: string
+              format: uri
+              description: Link to aspect-types resource
+        assetTypes:
+          type: object
+          properties:
+            href:
+              type: string
+              format: uri
+              description: Link to asset-types resource
+        assets:
+          type: object
+          properties:
+            href:
+              type: string
+              format: uri
+              description: Link to assets resource
+        files:
+          type: object
+          properties:
+            href:
+              type: string
+              format: uri
+              description: Link to files resource
+    AssetTypeListResource:
+      type: object
+      properties:
+        _embedded:
+          type: object
+          properties:
+            assetTypes:
+              type: array
+              items:
+                $ref: '#/components/schemas/AssetTypeResource'
+        page:
+          $ref: '#/components/schemas/Page'
+        _links:
+          $ref: '#/components/schemas/PagingLinks'
+    AspectTypeListResource:
+      type: object
+      properties:
+        _embedded:
+          type: object
+          properties:
+            aspectTypes:
+              type: array
+              items:
+                $ref: '#/components/schemas/AspectTypeResource'
+        page:
+          $ref: '#/components/schemas/Page'
+        _links:
+          $ref: '#/components/schemas/PagingLinks'
+    AssetListResource:
+      type: object
+      properties:
+        _embedded:
+          type: object
+          properties:
+            assets:
+              type: array
+              items:
+                $ref: '#/components/schemas/AssetResource'
+        page:
+          $ref: '#/components/schemas/Page'
+        _links:
+          $ref: '#/components/schemas/PagingLinks'
+    VariableListResource:
+      type: object
+      properties:
+        _embedded:
+          type: object
+          properties:
+            variables:
+              type: array
+              items:
+                $ref: '#/components/schemas/VariableDefinition'
+        page:
+          $ref: '#/components/schemas/Page'
+        _links:
+          $ref: '#/components/schemas/PagingLinks'
+    AspectListResource:
+      type: object
+      properties:
+        _embedded:
+          type: object
+          properties:
+            aspects:
+              type: array
+              items:
+                $ref: '#/components/schemas/AspectResource'
+        page:
+          $ref: '#/components/schemas/Page'
+        _links:
+          $ref: '#/components/schemas/PagingLinks'
+    FileMetadataListResource:
+      type: object
+      properties:
+        _embedded:
+          type: object
+          properties:
+            files:
+              type: array
+              items:
+                $ref: '#/components/schemas/FileMetadataResource'
+        page:
+          $ref: '#/components/schemas/Page'
+        _links:
+          $ref: '#/components/schemas/PagingLinks'
+    AssetModelLock:
+      type: object
+      properties:
+        enabled:
+          $ref: '#/components/schemas/enabled'
+        jobs:
+          $ref: '#/components/schemas/jobs'
+    ModelLock:
+      type: object
+      properties:
+        enabled:
+          $ref: '#/components/schemas/enabled'
+  parameters:
+    TypeId:
+      name: id
+      in: path
+      description: |
+        The type's id is a unique identifier. The id's length must be between 1 and 128 characters and matches
+        the following symbols "A-Z", "a-z", "0-9", "_" and "." beginning with the tenant name what has a maximum of 8 characters.
+        (e.g . tenant_name.type_id).
+
+        **Note:** tenant name is the name of tenant can be obtained using TenantManagements /tenantInfo API [TM API Link](https://documentation.mindsphere.io/MindSphere/apis-xcelerator/core-tenantmanagement/api-tenantmanagement-api.html).
+      required: true
+      schema:
+        type: string
+        pattern: '[A-Za-z0-9_]{1,8}\.[A-Za-z0-9_]+'
+        minLength: 1
+        maxLength: 128
+    uniqueId:
+      name: id
+      in: path
+      description: Unique identifier
+      required: true
+      schema:
+        type: string
+        pattern: '[0-9A-F]{32}'
+    fileKey:
+      name: key
+      in: path
+      description: Keyword for the file to be assigned to an asset or asset type.
+      required: true
+      schema:
+        type: string
+        pattern: '[\w]+'
+    fileId:
+      name: fileId
+      in: path
+      description: Unique identifier of the file.
+      required: true
+      schema:
+        type: string
+        pattern: '[0-9A-F]{32}'
+    page:
+      name: page
+      in: query
+      description: Specifies the requested page index
+      schema:
+        type: integer
+    size:
+      name: size
+      in: query
+      description: Specifies the number of elements in a page (default size is 10)
+      schema:
+        type: integer
+    sort:
+      name: sort
+      in: query
+      description: Specifies the ordering of returned elements
+      schema:
+        type: string
+    filter:
+      name: filter
+      in: query
+      description: Specifies the additional filtering criteria
+      schema:
+        type: string
+    ifNoneMatch:
+      name: If-None-Match
+      in: header
+      description: ETag hash of previous request to allow caching
+      schema:
+        type: string
+    ifNoneMatchStar:
+      name: If-None-Match
+      in: header
+      description: Set ifNoneMatch header to "*" for ensuring create request
+      schema:
+        type: string
+    ifMatch:
+      name: If-Match
+      in: header
+      description: 'Last known version to facilitate optimistic locking.
+
+        *Required for modification.
+
+        '
+      schema:
+        type: string
+    ifMatchMandatory:
+      name: If-Match
+      in: header
+      description: Last known version to facilitate optimistic locking
+      required: true
+      schema:
+        type: string
+    ifMatchVariable:
+      name: If-Match
+      in: header
+      description: Last known version of asset type to facilitate optimistic locking. Etag from asset type response to be
+        used.
+      required: true
+      schema:
+        type: string
+    exploded:
+      name: exploded
+      in: query
+      description: Specifies if the asset type should include all of it's inherited variables and aspects. Default is false.
+      schema:
+        type: boolean
+    includeShared:
+      name: includeShared
+      in: query
+      description: Specifies if the operation should take into account shared (received) assets, aspects and asset types.
+        Received resources are not visible in case includeShared=false. For query operations, received resources are not returned.
+        Endpoints addressing individual resources respond with 404. In case received resources are referenced in a request
+        parameter or property, they are treated as not existing.
+      schema:
+        type: boolean
+        default: false
+    basicFieldsOnly:
+      name: basicFieldsOnly
+      in: query
+      description: Specifies if the assets should include all of it's inherited variables and aspects from assettype and aspecttype.
+      schema:
+        type: boolean
+        default: false
+  securitySchemes:
+    assettype:
+      type: oauth2
+      description: 'For **Xcelerator** compliance, please use **authorizationUrl** = https://1000001700.eu1.sws.siemens.com/oauth/authorize
+        and **tokenUrl** = https://1000001700.eu1.sws.siemens.com/oauth/token'
+      flows:
+        authorizationCode:
+          authorizationUrl: https://1000001700.eu1.sws.siemens.com/oauth/authorize
+          tokenUrl: https://1000001700.eu1.sws.siemens.com/oauth/token
+          scopes:
+            atm.w: create or update asset types
+            atm.r: read asset types
+            atm.d: delete asset types
+    assetmodel:
+      type: oauth2
+      description: 'For **Xcelerator** compliance, please use **authorizationUrl** = https://1000001700.eu1.sws.siemens.com/oauth/authorize
+        and **tokenUrl** = https://1000001700.eu1.sws.siemens.com/oauth/token'
+      flows:
+        authorizationCode:
+          authorizationUrl: https://1000001700.eu1.sws.siemens.com/oauth/authorize
+          tokenUrl: https://1000001700.eu1.sws.siemens.com/oauth/token
+          scopes:
+            aml.r: read lock state of an asset model
+            aml.w: enable/disable lock state of an asset model
+    aspecttype:
+      type: oauth2
+      description: 'For **Xcelerator** compliance, please use **authorizationUrl** = https://1000001700.eu1.sws.siemens.com/oauth/authorize
+        and **tokenUrl** = https://1000001700.eu1.sws.siemens.com/oauth/token'
+      flows:
+        authorizationCode:
+          authorizationUrl: https://1000001700.eu1.sws.siemens.com/oauth/authorize
+          tokenUrl: https://1000001700.eu1.sws.siemens.com/oauth/token
+          scopes:
+            atm.apt.r: read aspect types
+            atm.apt.w: write aspect types
+            atm.apt.d: delete aspect types
+    asset:
+      type: oauth2
+      description: 'For **Xcelerator** compliance, please use **authorizationUrl** = https://1000001700.eu1.sws.siemens.com/oauth/authorize
+        and **tokenUrl** = https://1000001700.eu1.sws.siemens.com/oauth/token'
+      flows:
+        authorizationCode:
+          authorizationUrl: https://1000001700.eu1.sws.siemens.com/oauth/authorize
+          tokenUrl: https://1000001700.eu1.sws.siemens.com/oauth/token
+          scopes:
+            asm.c: create assets
+            asm.r: read asset
+            asm.u: update assets
+            asm.d: delete assets
+            asm.m: move asset
+            asm.h.w: create or modify hierarchy of assets
+            asm.h.d: delete an element of the hierarchy of assets
+            asm.rh.w: create or modify root hierarchy of assets
+            asm.rh.d: delete a root element of the hierarchy of assets
+    location:
+      type: oauth2
+      description: 'For **Xcelerator** compliance, please use **authorizationUrl** = https://1000001700.eu1.sws.siemens.com/oauth/authorize
+        and **tokenUrl** = https://1000001700.eu1.sws.siemens.com/oauth/token'
+      flows:
+        authorizationCode:
+          authorizationUrl: https://1000001700.eu1.sws.siemens.com/oauth/authorize
+          tokenUrl: https://1000001700.eu1.sws.siemens.com/oauth/token
+          scopes:
+            asm.loc.w: write location
+            asm.loc.d: delete location
+    file:
+      type: oauth2
+      description: 'For **Xcelerator** compliance, please use **authorizationUrl** = https://1000001700.eu1.sws.siemens.com/oauth/authorize
+        and **tokenUrl** = https://1000001700.eu1.sws.siemens.com/oauth/token'
+      flows:
+        authorizationCode:
+          authorizationUrl: https://1000001700.eu1.sws.siemens.com/oauth/authorize
+          tokenUrl: https://1000001700.eu1.sws.siemens.com/oauth/token
+          scopes:
+            asm.f.r: read files
+            asm.f.w: write files
+            asm.f.d: delete files
+            asm.fa.w: assign files
+            asm.fa.d: delete file assignments
+            atm.fa.w: create file assignment to assettype
+            atm.fa.d: delete file assignment from assettype

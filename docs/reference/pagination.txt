@@ -1,0 +1,34 @@
+Source: https://developer.siemens.com/insights-hub/docs/apis/advanced-assetmanagement/ (retrieved 2026-10-06)
+
+Insights Hub and Industrial IoT 
+ Share 
+
+ llms optimized content 
+Insights Hub drives smart manufacturing through the industrial Internet of Things. Gain actionable insights with asset and operational data and improve your processes.Explore subscription optionsAccess Insights Hub APIs and Services
+
+Asset Management Service – Pagination¶
+When working with a tenant, it typically collects more and more assets, asset types, aspect types and files. When exploring these using the respective GET endpoints, the responses would contain object lists with several hundreds of entries. In order to break the results down into processable chunks, the Asset Management Service provides a pagination functionality. This functionality divides the results into pages, which only hold a defined number of results.The following endpoints support the pagination functionality:GET /assettype
+
+GET /aspecttype
+
+GET /assets
+
+GET /files
+
+GET /assets/{assetId}/variables
+
+GET /assets/{assetId}/aspects
+
+Pagination Parameters¶
+ | | Parameter | Description | Default Value | size | Defines how many objects are returned per page. (optional) | 10 | page | Each page only holds as many objects as defined by the size parameter and by default, only the first page is returned. Use this parameter to change the page number to be returned. (optional) | 0 | sort | Defines based on which object attributes the results are sorted. (optional) | name in ascending orderAs the table indicates, the pagination parameters are optional. By default, the endpoints return the first 10 elements in alphabetical order. The end of the response lists the value of the size parameter, the total number of elements, the total number of pages, and the page number of the returned page, for example:"page": {
+ "size": 10,
+ "totalElements": 433,
+ "totalPages": 44,
+ "number": 0
+ }
+
+Size¶
+The number of objects returned per page is set using the size parameter. Its default value is 10. Note that changing the size value affects the total number of pages, as the total number of objects is divided into bigger or smaller chunks. It is recommended to provide the page size of 200 for asset management GET APIs: GET /assettype, GET /aspecttype and GET /assets.Page¶
+By default, the first page of a result is returned. Its page number is 0, as is the default value of the page parameter. If a result consists of multiple pages, select the page to be returned using this parameter.Sorting¶
+Using the sort parameter, you can modify both the sorting attributes and the order of the sorting. The input for this parameter is case-sensitive and accepts the name of the object attribute to base the sorting on. All object attributes specified as filterable are allowed as input.
+ For sorting in descending order, append the name of object attribute with ,desc. This requires that the object attribute is set explicitly, even if you want to use the default value.

@@ -1,0 +1,54 @@
+# >>> CREATE platform baseline >>>
+# Do not edit this block: the platform rewrites it and moves it to the end
+# of the file before every platform commit. Project-specific ignores belong
+# outside (above) the block.
+
+# build artefacts
+node_modules/
+dist/
+build/
+.next/
+.cache/
+__pycache__/
+*.pyc
+*.pyo
+target/
+
+.pnpm-store/
+.venv/
+venv/
+
+# tmp + os
+/tmp/
+.DS_Store
+*.log
+*.swp
+
+# secrets (defense in depth — agent should not write env files to
+# /workspace, but if it does, we don't want them ending up in git)
+.env
+.env.*
+!.env.example
+
+# claude config artefacts — everything under .claude/ is platform-seeded at
+# pod start (skills, agents, settings) or runtime state (projects, turnstate);
+# managed-mcp.json carries the per-project LLM virtual key and must never be
+# committed
+.claude/
+
+# platform state (recovery patches, preview-fix diagnostics, screenshots —
+# written by the platform, not project code). .create/summaries/ is the one
+# exception: durable session summaries (ADR-015) are committed and travel
+# with the branch. .create/* + negation instead of .create/ because git
+# never descends into an excluded directory, so a negation under a fully
+# excluded dir would be dead.
+.create/*
+!.create/summaries/
+
+# preview build artifact dir — written by sandboxagent BuildPreview
+.preview/
+
+# user chat attachments — materialized from blob storage by the platform
+# (uploads/<node_id>/<turn_index>/<filename>); blob is the source of truth
+/uploads/
+# <<< CREATE platform baseline <<<

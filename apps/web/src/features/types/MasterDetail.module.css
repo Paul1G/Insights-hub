@@ -1,0 +1,314 @@
+/* Master/detail layout. Container grid with minmax(0, …) tracks so long
+   names wrap instead of overflowing (Layout Contract §10 rules 2 + 3). */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(16rem, 22rem) minmax(0, 1fr);
+  gap: var(--theme-space-4);
+  align-items: start;
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.master {
+  min-width: 0;
+  position: sticky;
+  top: 0;
+  max-height: calc(100vh - var(--theme-space-8));
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 1024px) {
+  .master {
+    position: static;
+    max-height: none;
+  }
+}
+
+.detail {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-4);
+}
+
+/* ---- Master list ---- */
+.listPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-2);
+  min-width: 0;
+  min-height: 0;
+  padding: var(--theme-space-3);
+  border: 1px solid var(--theme-color-soft-bdr);
+  border-radius: var(--theme-default-border-radius, 4px);
+  background: var(--theme-color-2);
+}
+
+.listTitle {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.search {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space--2);
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+@media (max-width: 1024px) {
+  .list {
+    max-height: 22rem;
+  }
+}
+
+.item {
+  min-width: 0;
+}
+
+.itemButton {
+  display: flex;
+  align-items: center;
+  gap: var(--theme-space-1);
+  width: 100%;
+  min-width: 0;
+  padding-block: var(--theme-space-1);
+  padding-inline-end: var(--theme-space-1);
+  padding-inline-start: calc(var(--theme-space-1) + var(--md-level, 0) * var(--theme-space-3));
+  background: none;
+  border: 0;
+  border-inline-start: 2px solid transparent;
+  border-radius: var(--theme-default-border-radius, 4px);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.itemButton:hover {
+  background: var(--theme-color-ghost--hover);
+}
+
+.itemButton:focus-visible {
+  outline: 2px solid var(--theme-color-focus-bdr);
+  outline-offset: -2px;
+}
+
+.selected {
+  background: var(--theme-color-ghost--selected);
+  border-inline-start-color: var(--theme-color-primary);
+}
+
+.muted {
+  opacity: 0.7;
+}
+
+.itemText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space--3);
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.itemPrimary,
+.itemSecondary {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.itemTrailing {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--theme-space--1);
+  flex: 0 1 auto;
+}
+
+/* ---- Detail ---- */
+.detailHeader {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--theme-space-2);
+  padding-block: var(--theme-space-2);
+  background: var(--theme-color-1);
+  border-bottom: 1px solid var(--theme-color-soft-bdr);
+  min-width: 0;
+}
+
+.detailTitleZone {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space--1);
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+
+.detailTitleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.detailTitle {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.detailSubtitle {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.badges {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--theme-space-1);
+}
+
+.detailActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--theme-space-1);
+  min-width: 0;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-3);
+  min-width: 0;
+  padding: var(--theme-space-3);
+  border: 1px solid var(--theme-color-soft-bdr);
+  border-radius: var(--theme-default-border-radius, 4px);
+  background: var(--theme-color-2);
+}
+
+/* Inherited / core content: dashed outline + no raised surface, so it reads
+   as "reference, not editable". */
+.readOnly {
+  background: transparent;
+  border-style: dashed;
+}
+
+.sectionHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.sectionTitleZone {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space--1);
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+
+.sectionTitle {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.sectionDescription {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.sectionActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--theme-space-1);
+}
+
+/* Form field grid used by the editors. */
+.fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(16rem, 100%), 1fr));
+  gap: var(--theme-space-3);
+  min-width: 0;
+}
+
+.fieldWide {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.field {
+  min-width: 0;
+}
+
+.inlineRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Small semantic tables for short read-only lists (data-grid README:
+   2–20 short rows read lighter as a plain table). */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 0;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  vertical-align: top;
+  padding-block: var(--theme-space--1);
+  padding-inline: var(--theme-space-1);
+  border-bottom: 1px solid var(--theme-color-soft-bdr);
+  overflow-wrap: anywhere;
+}
+
+.tableScroll {
+  width: 100%;
+  overflow-x: auto;
+  min-width: 0;
+}
+
+.empty {
+  padding: var(--theme-space-2);
+}

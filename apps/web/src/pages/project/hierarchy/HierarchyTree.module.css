@@ -1,0 +1,115 @@
+/* Virtualised tree. The scroll box has a fixed viewport-relative height so the
+   virtualiser has a stable window; rows are absolutely positioned at their
+   computed offset. Tokens only for spacing and colour. */
+.scroll {
+  position: relative;
+  height: 65vh;
+  min-height: 20rem;
+  overflow: auto;
+  min-width: 0;
+  border: 1px solid var(--theme-color-soft-bdr);
+  border-radius: var(--theme-default-border-radius, 4px);
+  background: var(--theme-color-1);
+}
+
+.scroll:focus-visible {
+  outline: 2px solid var(--theme-color-focus-bdr);
+  outline-offset: -2px;
+}
+
+.inner {
+  position: relative;
+  width: 100%;
+}
+
+.row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--theme-space-1);
+  padding-inline: var(--theme-space-1);
+  box-sizing: border-box;
+  cursor: pointer;
+  min-width: 0;
+  user-select: none;
+}
+
+.row:hover {
+  background: var(--theme-color-ghost--hover);
+}
+
+.selected {
+  background: var(--theme-color-ghost--selected);
+}
+
+.selected:hover {
+  background: var(--theme-color-ghost--selected-hover);
+}
+
+/* The keyboard cursor is only drawn while the tree has focus. */
+.scroll:focus-visible .active {
+  outline: 2px solid var(--theme-color-focus-bdr);
+  outline-offset: -2px;
+}
+
+.dropTarget {
+  outline: 2px dashed var(--theme-color-primary);
+  outline-offset: -2px;
+  background: var(--theme-color-ghost--active);
+}
+
+.dragging {
+  opacity: 0.5;
+}
+
+.indent {
+  flex: 0 0 auto;
+}
+
+.toggle {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--theme-default-border-radius, 4px);
+}
+
+.toggle:hover {
+  background: var(--theme-color-ghost--active);
+}
+
+.label {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: baseline;
+  gap: var(--theme-space-1);
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* One-line rows (fixed height for virtualisation): long names are truncated
+   with an ellipsis; the full name is in the detail panel. */
+.name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.type {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mark {
+  background: var(--theme-color-warning);
+  color: var(--theme-color-warning--contrast);
+  border-radius: var(--theme-space--3);
+}

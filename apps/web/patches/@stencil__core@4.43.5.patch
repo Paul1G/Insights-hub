@@ -1,0 +1,18 @@
+diff --git a/internal/stencil-ext-modules.d.ts b/internal/stencil-ext-modules.d.ts
+index ffec762996cf94678a4b8547bb64844cc3ed4df6..ba403e7a95ec15047c18e1ab5325856b33e6b4c1 100644
+--- a/internal/stencil-ext-modules.d.ts
++++ b/internal/stencil-ext-modules.d.ts
+@@ -1,8 +1,8 @@
+-declare module '*.css' {
+-  const src: () => string;
+-  export default src;
+-}
+-
++// Stencil's original `declare module '*.css'` was removed downstream because it
++// matches `*.module.css` files too and breaks Vite's CSS-Modules typing under
++// React. Apps that consume @stencil/core directly will need to add their own
++// CSS declaration if they import .css as a function. This project does not use
++// Stencil components directly.
+ declare module '*.svg' {
+   const src: string;
+   export default src;

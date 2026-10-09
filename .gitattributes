@@ -1,0 +1,2 @@
+# Keep generated archives out of `git archive` source exports.
+downloads/ export-ignore

@@ -1,0 +1,32 @@
+# Secrets — MUST NOT be committed
+.env
+
+# SQLite database files
+*.db
+*.db-shm
+*.db-wal
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+
+# Coverage / test artefacts
+coverage/
+.vitest-cache/
+
+# pnpm
+.pnpm-store/
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Local data dir (SQLite DB, generated secret.key, simulator tenants)
+data/

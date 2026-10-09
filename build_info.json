@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "frontend": {
+    "dir": "apps/web",
+    "framework": "vite"
+  },
+  "backend": {
+    "dir": "backend",
+    "framework": "node",
+    "port": 8080,
+    "readiness_path": "/healthz",
+    "entrypoint": "dist/server.js"
+  },
+  "preview": true,
+  "title": "Asset Model Studio",
+  "estimation": {
+    "value_score": 4,
+    "value_label": "High",
+    "category": "Industrial IoT Asset Model Design & Deployment Tool",
+    "assessment": "Offline-first designer, validator, documenter and deployer for Insights Hub Asset Management v3 models; now reads and caches every tenant's existing aspect types, asset types and assets for browsing, reuse in editors, validation and import, plus guardrails, cross-tenant copy and idempotent deployment.",
+    "dev_cost_days": {
+      "min": 65,
+      "max": 100
+    },
+    "day_rate_eur": 900,
+    "dev_cost_eur": 74000,
+    "dev_cost_rationale": "65-100 days: domain model + validator, type/hierarchy editors, tenant catalog read/import, docs, secure proxy with online CRUD, deployment engine with resume/rollback, tests.",
+    "annual_business_value_eur": 130000,
+    "business_value_rationale": "Saves modelling and deployment effort across tenants, enables reuse of existing tenant models, and prevents attribute-billing and limit violations before go-live.",
+    "assessed_at_commit": "d899d926eb97524d30cf2755e3c0ce3a116af83c"
+  }
+}

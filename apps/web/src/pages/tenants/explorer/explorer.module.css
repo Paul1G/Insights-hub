@@ -1,0 +1,369 @@
+/* Shared layout for the tenant explorer tabs and dialogs. Tokens only
+   (foundations/spacing-scale, color-tokens); Layout Contract §10. */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-3);
+  min-width: 0;
+  width: 100%;
+}
+
+.tightStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-1);
+  min-width: 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.rowEnd {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+/* list-toolbar: left cluster narrows, right cluster acts. */
+.toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--theme-space-3);
+  min-width: 0;
+  width: 100%;
+}
+
+.toolbarSearch {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: var(--theme-space-2);
+  flex: 1 1 24rem;
+  min-width: 0;
+}
+
+.toolbarActions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.searchInput {
+  flex: 1 1 14rem;
+  min-width: 0;
+  max-width: 22rem;
+}
+
+.selectInput {
+  flex: 0 1 14rem;
+  min-width: 0;
+}
+
+/* Master/detail: list on the left, details on the right; stacks when narrow. */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: var(--theme-space-4);
+  align-items: start;
+  min-width: 0;
+  width: 100%;
+}
+
+@media (max-width: 1200px) {
+  .split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.gridSection {
+  width: 100%;
+  min-width: 0;
+  height: 32rem;
+}
+
+.gridSectionTall {
+  width: 100%;
+  min-width: 0;
+  height: 38rem;
+}
+
+.gridSectionShort {
+  width: 100%;
+  min-width: 0;
+  height: 22rem;
+}
+
+.card {
+  width: 100%;
+  min-width: 0;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-3);
+  width: 100%;
+  min-width: 0;
+}
+
+.heading {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space--1);
+  flex: 1 1 12rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--theme-space-2) var(--theme-space-3);
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .fieldGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space--2);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--theme-space-3);
+  min-width: 0;
+}
+
+.formGrid > .full {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 640px) {
+  .formGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.full {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+/* Small semantic tables (variables, aspects, file assignments). */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 0;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  vertical-align: top;
+  padding-block: var(--theme-space--1);
+  padding-inline: var(--theme-space-1);
+  border-bottom: 1px solid var(--theme-color-soft-bdr);
+  overflow-wrap: anywhere;
+}
+
+.tableWrap {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.muted {
+  color: var(--theme-color-soft-text);
+}
+
+.code {
+  overflow-wrap: anywhere;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space--1);
+  min-width: 0;
+}
+
+.listItem {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--theme-space-1);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.dialogBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-3);
+  width: 100%;
+  min-width: 0;
+}
+
+.dialogTitle {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.scrollBox {
+  max-height: 22rem;
+  overflow: auto;
+  min-width: 0;
+  border: 1px solid var(--theme-color-soft-bdr);
+  border-radius: var(--theme-default-border-radius, 4px);
+}
+
+.virtualInner {
+  position: relative;
+  width: 100%;
+}
+
+.virtualRow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space--2);
+  padding-block: var(--theme-space--1);
+  padding-inline: var(--theme-space-2);
+  border-bottom: 1px solid var(--theme-color-soft-bdr);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--theme-space--1);
+  min-width: 0;
+}
+
+.crumbButton {
+  background: none;
+  border: 0;
+  padding: var(--theme-space--2) var(--theme-space--1);
+  color: var(--theme-color-primary);
+  cursor: pointer;
+  border-radius: var(--theme-default-border-radius, 4px);
+  overflow-wrap: anywhere;
+  font: inherit;
+}
+
+.crumbButton:hover {
+  background: var(--theme-color-ghost--hover);
+}
+
+.crumbButton:focus-visible {
+  outline: 2px solid var(--theme-color-focus-bdr);
+}
+
+.crumbCurrent {
+  padding: var(--theme-space--2) var(--theme-space--1);
+  overflow-wrap: anywhere;
+}
+
+.editorRow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--theme-space-2);
+  align-items: end;
+  padding-block: var(--theme-space-2);
+  border-bottom: 1px solid var(--theme-color-soft-bdr);
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
+  .editorRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.editorRowWide {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.deletedRow {
+  opacity: 0.6;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.cellButton {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}

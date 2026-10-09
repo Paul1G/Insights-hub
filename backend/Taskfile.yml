@@ -1,0 +1,68 @@
+version: "3"
+
+# asset-model-studio-backend Taskfile
+# Run `task --list` to see all available tasks.
+#
+# Tasks are thin wrappers over pnpm scripts so AI agents can use the same
+# command-line surface across all skeletons regardless of language.
+
+tasks:
+  run:
+    desc: "Run the server (tsx watch)"
+    cmds:
+      - pnpm dev
+
+  build:
+    desc: "Compile TypeScript to dist/"
+    cmds:
+      - pnpm build
+
+  start:
+    desc: "Start the compiled server from dist/"
+    cmds:
+      - pnpm start
+
+  test:
+    desc: "Run all tests once"
+    cmds:
+      - pnpm test
+
+  test:watch:
+    desc: "Run tests in watch mode"
+    cmds:
+      - pnpm test:watch
+
+  lint:
+    desc: "Run ESLint"
+    cmds:
+      - pnpm lint
+
+  lint:fix:
+    desc: "Run ESLint with --fix"
+    cmds:
+      - pnpm lint:fix
+
+  format:
+    desc: "Run Prettier on the project"
+    cmds:
+      - pnpm format
+
+  typecheck:
+    desc: "Run tsc --noEmit"
+    cmds:
+      - pnpm typecheck
+
+  tidy:
+    desc: "Re-resolve dependencies (pnpm install)"
+    cmds:
+      - pnpm install --frozen-lockfile=false
+
+  db:generate:
+    desc: "Generate a new drizzle migration from schema.ts changes"
+    cmds:
+      - pnpm db:generate
+
+  db:migrate:
+    desc: "Apply pending drizzle migrations"
+    cmds:
+      - pnpm db:migrate

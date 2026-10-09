@@ -1,0 +1,212 @@
+/* Import, export & docs page. Layout Contract: tokens only, min-width: 0 on
+   every text container, user content wraps. */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-3);
+  width: 100%;
+  min-width: 0;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.subTitle {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.divider {
+  border: 0;
+  border-top: 1px solid var(--theme-color-soft-bdr);
+  margin: 0;
+  width: 100%;
+}
+
+/* IxMessageBar ships a host margin for standalone use; inside panels the
+   stack gap is the only rhythm. */
+.stack ix-message-bar,
+.group ix-message-bar {
+  margin: 0;
+}
+
+.messageList {
+  margin: 0;
+  padding-inline-start: var(--theme-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space--1);
+  min-width: 0;
+}
+
+.messageList li {
+  overflow-wrap: anywhere;
+}
+
+/* Drop zone (interactive/action-panel with-dropzone). */
+.dropzone {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--theme-space-2);
+  padding: var(--theme-space-4) var(--theme-space-3);
+  border: 1px dashed var(--theme-color-soft-bdr);
+  border-radius: var(--theme-space--1);
+  text-align: center;
+}
+
+.dropActive {
+  border-color: var(--theme-color-primary);
+  background: var(--theme-color-ghost--hover);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Section toggles of the documentation generator. */
+.optionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--theme-space-2) var(--theme-space-4);
+  min-width: 0;
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space--2);
+  min-width: 0;
+}
+
+.optionHint {
+  padding-inline-start: var(--theme-space-5);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: var(--theme-space-3);
+  min-width: 0;
+}
+
+.preview {
+  width: 100%;
+  min-height: 36rem;
+  height: 70vh;
+  border: 1px solid var(--theme-color-soft-bdr);
+  border-radius: var(--theme-space--1);
+  background: var(--theme-color-1);
+}
+
+/* Import preview rows. */
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.rowItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-1);
+  padding: var(--theme-space-2) var(--theme-space-3);
+  border: 1px solid var(--theme-color-weak-bdr);
+  border-radius: var(--theme-space--1);
+  min-width: 0;
+}
+
+.rowHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--theme-space-1) var(--theme-space-2);
+  min-width: 0;
+}
+
+.rowLabel {
+  flex: 1 1 12rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  white-space: nowrap;
+}
+
+.fileList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.fileItem {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--theme-space-2) var(--theme-space-3);
+  min-width: 0;
+}
+
+.fileName {
+  flex: 1 1 12rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}

@@ -1,0 +1,528 @@
+Source: https://developer.siemens.com/insights-hub/docs/apis/advanced-assetmanagement/ (retrieved 2026-10-06)
+
+Insights Hub and Industrial IoT 
+ Share 
+
+ llms optimized content 
+Insights Hub drives smart manufacturing through the industrial Internet of Things. Gain actionable insights with asset and operational data and improve your processes.Explore subscription optionsAccess Insights Hub APIs and Services
+
+Asset Management Service – Modeling Assets¶
+This example illustrates how assets can be modeled and structured. In this example, a global wind power company, which has multiple wind farms around the globe, creates their first assets in Insights Hub. For more information on the endpoints used in the example, refer to the API specification.The company has one type of wind turbines, the WindTurbine1000, from which the following electrical and mechanical metrics are to be collected:Power output in MWVoltageRotations per minutes in RPMVibrations of rotors in HzThe company has wind farms installed in the North Sea and the Baltic Sea. For each wind farm, two assets shall be created. | | | Wind Farm North Sea | Wind Farm Baltic Sea | GPS coordinates | 54.008333, 6.598333 | 54.834, 14.068 | Turbine #1 | N-001 | B-001 | Turbine #2 | N-002 | B-002Prerequisites¶
+You have access to a Insights Hub tenantYou have the mdsp:core:assetmanagement.admin rolePreparing Templates¶
+Note{tenantName} used in below examples is the name of tenant, can be obtained using TenantManagements /tenantInfo API TenantManagement.
+Creating Aspect Types¶
+Two aspect types shall be created, one for electrical metrics and the other for mechanical metrics. This is done using the endpoint:PUT /aspecttypes/{id}
+
+For the aspect type for electrical metrics, the {id} is named {tenantName}.ElectricalMetrics and the body of the request is:{
+ "name": "ElectricalMetrics",
+ "category": "dynamic",
+ "scope": "private",
+ "description": "Electrical metrics for wind turbines",
+ "variables": [
+ {
+ "name": "PWR_OUT",
+ "dataType": "DOUBLE",
+ "unit": "MW",
+ "qualityCode": true,
+ "searchable" : true
+ },
+ {
+ "name": "V_OUT",
+ "dataType": "DOUBLE",
+ "unit": "Volt",
+ "qualityCode": true,
+ "searchable" : true
+ }
+ ]
+}
+
+The result can be verified by checking the response:{
+ "id": "{tenantName}.ElectricalMetrics",
+ "tenantId": "{tenantId}",
+ "name": "ElectricalMetrics",
+ "category": "dynamic",
+ "scope": "private",
+ "description": "Electrical metrics for wind turbines",
+ "variables": [
+ {
+ "name": "PWR_OUT",
+ "unit": "MW",
+ "searchable": true,
+ "qualityCode": true,
+ "defaultValue": null,
+ "dataType": "DOUBLE",
+ "length": null
+ },
+ {
+ "name": "V_OUT",
+ "unit": "Volt",
+ "searchable": true,
+ "qualityCode": true,
+ "defaultValue": null,
+ "dataType": "DOUBLE",
+ "length": null
+ }
+ ],
+ "etag": {etagvalue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ }
+ }
+}
+
+For the aspect type for mechanical metrics, the {id} is named {tenantName}.MechanicalMetrics and the body of the request is:{
+ "name": "MechanicalMetrics",
+ "category": "dynamic",
+ "scope": "private",
+ "description": "Mechanical metrics for wind turbines",
+ "variables": [
+ {
+ "name": "V",
+ "dataType": "INT",
+ "unit": "RPM",
+ "qualityCode": true,
+ "searchable" : true
+ },
+ {
+ "name": "VIB",
+ "dataType": "INT",
+ "unit": "Hz",
+ "qualityCode": true,
+ "searchable" : true
+ }
+ ]
+}
+
+The created aspect type can be verified by checking the response:{
+ "id": "{tenantName}.MechanicalMetrics",
+ "tenantId": "{tenantId}",
+ "name": "MechanicalMetrics",
+ "category": "dynamic",
+ "scope": "private",
+ "description": "Mechanical metrics for wind turbines",
+ "variables": [
+ {
+ "name": "V",
+ "unit": "RPM",
+ "searchable": true,
+ "qualityCode": true,
+ "defaultValue": null,
+ "dataType": "INT",
+ "length": null
+ },
+ {
+ "name": "VIB",
+ "unit": "Hz",
+ "searchable": true,
+ "qualityCode": true,
+ "defaultValue": null,
+ "dataType": "INT",
+ "length": null
+ }
+ ],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ }
+ }
+}
+
+Creating Asset Types¶
+After creating the required aspect types, the asset type for the WindTurbine1000 can be created using the following endpoint:PUT /assettypes/{id}
+
+Here, the {id} is named {tenantName}.WT1000 and the body of the request is:{
+ "name": "WindTurbine 1000",
+ "description": "WindTurbine 1000 with best reliability.",
+ "parentTypeId": "core.basicdevice",
+ "instantiable": true,
+ "scope": "private",
+ "variables": [
+ {
+ "name": "InstallationDate",
+ "dataType": "TIMESTAMP",
+ "searchable": true,
+ "defaultValue": "1970-01-01T09:00:00+00:00"
+ }
+ ],
+ "aspects": [
+ {
+ "name": "ElectricalMetrics",
+ "aspectTypeId": "{tenantName}.ElectricalMetrics"
+ },
+ {
+ "name": "MechanicalMetrics",
+ "aspectTypeId": "{tenantName}.MechanicalMetrics"
+ }
+ ]
+}
+
+The created asset type can be verified by checking the response:Response {
+ "parentTypeId": "core.basicdevice",
+ "instantiable": true,
+ "tenantId": "{tenantId}",
+ "name": "WindTurbine 1000",
+ "description": "WindTurbine 1000 with best reliability.",
+ "scope": "private",
+ "variables": [
+ {
+ "name": "InstallationDate",
+ "unit": null,
+ "searchable": true,
+ "defaultValue": "1970-01-01T09:00:00+00:00",
+ "dataType": "TIMESTAMP",
+ "length": null
+ }
+ ],
+ "aspects": [
+ {
+ "name": "ElectricalMetrics",
+ "aspectType": {
+ "id": "{tenantName}.ElectricalMetrics",
+ "tenantId": "{tenantId}",
+ "name": "ElectricalMetrics",
+ "category": "dynamic",
+ "scope": "private",
+ "description": "Electrical metrics for wind turbines",
+ "variables": [
+ {
+ "name": "PWR_OUT",
+ "unit": "MW",
+ "searchable": true,
+ "qualityCode": true,
+ "defaultValue": null,
+ "dataType": "DOUBLE",
+ "length": null
+ },
+ {
+ "name": "V_OUT",
+ "unit": "Volt",
+ "searchable": true,
+ "qualityCode": true,
+ "defaultValue": null,
+ "dataType": "DOUBLE",
+ "length": null
+ }
+ ],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ }
+ }
+ }
+ },
+ {
+ "name": "MechanicalMetrics",
+ "aspectType": {
+ "id": "{tenantName}.MechanicalMetrics",
+ "tenantId": "{tenantId}",
+ "name": "MechanicalMetrics",
+ "category": "dynamic",
+ "scope": "private",
+ "description": "Mechanical metrics for wind turbines",
+ "variables": [
+ {
+ "name": "V",
+ "unit": "RPM",
+ "searchable": true,
+ "qualityCode": true,
+ "defaultValue": null,
+ "dataType": "INT",
+ "length": null
+ },
+ {
+ "name": "VIB",
+ "unit": "Hz",
+ "searchable": true,
+ "qualityCode": true,
+ "defaultValue": null,
+ "dataType": "INT",
+ "length": null
+ }
+ ],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ }
+ }
+ }
+ }
+ ],
+ "fileAssignments": [],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ },
+ "id": "{tenantName}.WT1000"
+}
+
+Modeling Assets¶
+Creating Asset Sites¶
+For reducing complexity, an asset of type basic.site is created for each wind farm. This is done using the following endpoint:POST /assets
+
+For the wind farm in the North Sea, the body is:{
+ "name": "North Sea",
+ "description": "Wind Farm North Sea",
+ "location": {
+ "longitude": 54.008333,
+ "latitude": 6.598333
+ },
+ "typeId": "core.basicarea",
+ "parentId": "{parentAssetId}",
+ "timezone": "Europe/Berlin"
+}
+
+The response of the call contains the newly created North Sea site asset so you can validate the correct creation:{
+ "assetId": "{assetId}",
+ "tenantId": "{tenantId}",
+ "name": "North Sea",
+ "etag": {etagValue},
+ "externalId": null,
+ "t2Tenant": null,
+ "subTenant": null,
+ "description": "Wind Farm North Sea",
+ "timezone": "Europe/Berlin",
+ "parentId": "{parentAssetId}",
+ "typeId": "core.basicarea",
+ "location": {
+ "country": null,
+ "region": null,
+ "locality": null,
+ "streetAddress": null,
+ "postalCode": null,
+ "longitude": 54.008333,
+ "latitude": 6.598333
+ },
+ "fileAssignments": [],
+ "variables": [],
+ "aspects": [],
+ "locks": [],
+ "hierarchyPath": [
+ {
+ "assetId": "{assetId}",
+ "name": "{tenantName}"
+ }
+ ],
+ "deleted": null,
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "aspects": {
+ "href": "{link}"
+ },
+ "variables": {
+ "href": "{link}"
+ },
+ "location": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ }
+}
+
+The {parentAssetId} is the root asset. Its ID can be requested using the following endpoint:GET /assets/root
+
+For the wind farm in the Baltic Sea, the body is:{
+ "name": "Baltic Sea",
+ "description": "Wind Farm Baltic Sea",
+ "location": {
+ "longitude": 54.834,
+ "latitude": 14.068
+ },
+ "typeId": "core.basicarea",
+ "parentId": "{parentAssetId}",
+ "timezone": "Europe/Berlin"
+}
+
+The response of the call contains the newly created Baltic Sea site asset so you can validate the correct creation:Response {
+ "assetId": "{assetId}",
+ "tenantId": "{tenantId}",
+ "name": "Baltic Sea",
+ "etag": 0,
+ "externalId": null,
+ "t2Tenant": null,
+ "subTenant": null,
+ "description": "Wind Farm Baltic Sea",
+ "timezone": "Europe/Berlin",
+ "parentId": "{parentAssetId}",
+ "typeId": "core.basicarea",
+ "location": {
+ "country": null,
+ "region": null,
+ "locality": null,
+ "streetAddress": null,
+ "postalCode": null,
+ "longitude": 54.834,
+ "latitude": 14.068
+ },
+ "fileAssignments": [],
+ "variables": [],
+ "aspects": [],
+ "locks": [],
+ "hierarchyPath": [
+ {
+ "assetId": "{parentAssetId}",
+ "name": "{tenantName}"
+ }
+ ],
+ "deleted": null,
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "aspects": {
+ "href": "{link}"
+ },
+ "variables": {
+ "href": "{link}"
+ },
+ "location": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ }
+}
+
+Creating Assets¶
+After the asset sites are set up, the actual assets are created using the following endpoint:POST /assets/
+
+The body for the first asset for the wind farm of the North Sea is:{
+ "name": "N-001",
+ "description": "Wind turbine 001 in North Sea",
+ "variables": [
+ {
+ "name": "InstallationDate",
+ "value": "2018-08-28T09:00:00+00:00"
+ }
+ ],
+ "typeId": "{tenantName}.WT1000",
+ "parentId": "{AssetIdNorthSea}"
+}
+
+The {AssetIdNorthSea} is the asset ID of the North Sea site asset.The response of the call contains the newly created asset for the wind farm in the North Sea, so you can validate the correct creation:Response {
+ "assetId": "{assetId}",
+ "tenantId": "{tenantId}",
+ "name": "N-001",
+ "etag": {etagValue},
+ "externalId": null,
+ "t2Tenant": null,
+ "subTenant": null,
+ "description": "Wind turbine 001 in North Sea",
+ "timezone": "Europe/Berlin",
+ "parentId": "{AssetIdNorthSea}",
+ "typeId": "{tenantName}.WT1000",
+ "location": {
+ "country": null,
+ "region": null,
+ "locality": null,
+ "streetAddress": null,
+ "postalCode": null,
+ "longitude": 54.008333,
+ "latitude": 6.598333
+ },
+ "fileAssignments": [],
+ "variables": [
+ {
+ "name": "InstallationDate",
+ "value": "2018-08-28T09:00:00+00:00"
+ }
+ ],
+ "aspects": [],
+ "locks": [],
+ "hierarchyPath": [
+ {
+ "assetId": "{rootAssetId}",
+ "name": "{tenantName}"
+ },
+ {
+ "assetId": "{AssetIdNorthSea}",
+ "name": "North Sea"
+ }
+ ],
+ "deleted": null,
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "aspects": {
+ "href": "{link}"
+ },
+ "variables": {
+ "href": "{link}"
+ },
+ "location": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ }
+}
+
+The response shows that value of the type variable InstallationDate of the asset is set to the value given in the request body. The default value defined by the asset type has been overwritten.
+ The asset has inherited its location from the North Sea site asset.
+ The asset has instantiated the aspects defined by its asset type WK1000, but the aspect list is empty. This is because all its aspects are dynamic and aspect lists are only populated on asset level, if the aspect is defined as static.The bodies for creating the other three assets are shown below:{
+ "name": "N-002",
+ "description": "Wind turbine 002 in North Sea",
+ "variables": [
+ {
+ "name": "InstallationDate",
+ "value": "2018-08-28T09:00:00+00:00"
+ }
+ ],
+ "typeId": "{tenantName}.WT1000",
+ "parentId": "{AssetIdNorthSea}"
+}
+
+{
+ "name": "B-001",
+ "description": "Wind turbine 001 in Baltic Sea",
+ "variables": [
+ {
+ "name": "InstallationDate",
+ "value": "2018-08-28T09:00:00+00:00"
+ }
+ ],
+ "typeId": "{tenantName}.WT1000",
+ "parentId": "{AssetIdNorthSea}"
+}
+
+{
+ "name": "B-002",
+ "description": "Wind turbine 002 in Baltic Sea",
+ "variables": [
+ {
+ "name": "InstallationDate",
+ "value": "2018-08-28T09:00:00+00:00"
+ }
+ ],
+ "typeId": "{tenantName}.WT1000",
+ "parentId": "{AssetIdNorthSea}"
+}
+
+AttentionThe parentId for the wind turbines in the Baltic Sea is intentionally set wrong for this example. The next section is based on this.
+Moving assets¶
+In the code given above the wind turbines B-001 and B-002 are inherited from the North Sea asset site instead of the Baltic Sea asset site. This can be corrected by moving both assets using the move endpoint:POST /assets/{id}/move
+
+The request requires the following parameters:If-Match: Has to be set as the {etagValue} of the asset. The {etagValue} is set to zero upon asset creation and incremented after each successful modification of the asset.id: Has to be set as the assetId of the asset. It is listed in the response when an asset is created.moveParameters:
+ {
+ "newParentId": "{AssetIdBalticSea}"
+}
+
+ The {AssetIdBalticSea} is the asset ID of the Baltic Sea site asset. After performing the move operation, the location of B-001 and B-002 is correct.
+HintIf you forgot the individual asset IDs, you can get the list of all assets and their IDs by calling the following endpoint:GET /assets
+
+You can reduce the results using the filter parameter:{"name": "Baltic Sea"}

@@ -1,0 +1,105 @@
+/* Asset type editor details. Tokens only; text wraps (Layout Contract §10). */
+.chain {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--theme-space--1);
+  min-width: 0;
+}
+
+.chainItem {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--theme-space--1);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.aspectList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.aspectRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-2);
+  padding: var(--theme-space-2);
+  border: 1px solid var(--theme-color-soft-bdr);
+  border-radius: var(--theme-default-border-radius, 4px);
+  background: var(--theme-color-1);
+  min-width: 0;
+}
+
+.inheritedRow {
+  background: transparent;
+  border-style: dashed;
+}
+
+.aspectHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.aspectFields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(14rem, 100%), 1fr));
+  gap: var(--theme-space-2);
+  flex: 1 1 24rem;
+  min-width: 0;
+}
+
+.aspectSummary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space--2);
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+
+.aspectMeta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--theme-space-1);
+}
+
+.fileRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto;
+  gap: var(--theme-space-2);
+  align-items: start;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .fileRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(10rem, 100%), 1fr));
+  gap: var(--theme-space-3);
+  min-width: 0;
+}
+
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space--1);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}

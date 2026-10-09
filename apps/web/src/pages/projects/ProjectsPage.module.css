@@ -1,0 +1,111 @@
+/* Projects page — entity-list/cards-and-list archetype. Tokens only; cards
+   fill their grid cell in both axes (Layout Contract §10 rules 7 + 8). */
+.headerActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--theme-space-2);
+}
+
+.note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--theme-space-1);
+  min-width: 0;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--theme-space-3);
+  min-width: 0;
+}
+
+.search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--theme-space-2);
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.searchInput {
+  flex: 1 1 15rem;
+  min-width: 0;
+  max-width: 24rem;
+}
+
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(18rem, 100%), 1fr));
+  gap: var(--theme-space-3);
+  align-items: stretch;
+}
+
+.cell {
+  min-width: 0;
+  height: 100%;
+}
+
+.card {
+  width: 100%;
+  height: 100%;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-1);
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+}
+
+.cardTitle {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.description {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.cardActions {
+  margin-top: auto;
+  padding-top: var(--theme-space-2);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--theme-space-1);
+}
+
+.iconActions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--theme-space--1);
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  padding: var(--theme-space-6);
+}

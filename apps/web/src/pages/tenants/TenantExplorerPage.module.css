@@ -1,0 +1,8 @@
+.panel {
+  min-width: 0;
+  width: 100%;
+}
+
+.panel[hidden] {
+  display: none;
+}

@@ -1,0 +1,1061 @@
+Source: https://developer.siemens.com/insights-hub/docs/apis/advanced-assetmanagement/ (retrieved 2026-10-06)
+
+Insights Hub and Industrial IoT 
+ Share 
+
+ llms optimized content 
+Insights Hub drives smart manufacturing through the industrial Internet of Things. Gain actionable insights with asset and operational data and improve your processes.Explore subscription optionsAccess Insights Hub APIs and Services
+
+Asset Management Service – Basic Asset Types¶
+This section lists the available basic asset types. They can be recognized by the tenant ID core, as in core.basicdevice.The following general properties are available on most basic asset types: | | Property | Description | parentTypeId | The ID of the asset type from which this one was derived | instantiable | Indicates if instances can be created from this type. 
+ Asset types, which are not instantiable are also referred to as abstract types. | scope | Indicates if an asset type is available to all tenants (public) or only to the tenant it was created in. 
+ All basic asset types have a public scope. The scope of asset types created in a tenant is automatically set to private. The scope cannot be changed.For restrictions on the values of individual properties, refer to the API Specification.Basic Asset¶
+The basic asset type is the base/root type of the Asset Management Service. Every asset type is inherited from this type. The basic asset type is an abstract types, so it is not possible to create assets from it.Example {
+ "parentTypeId": null,
+ "instantiable": false,
+ "tenantId": "core",
+ "name": "BasicAsset",
+ "description": "Base type for the Asset Management Service.",
+ "scope": "public",
+ "variables": [
+ {
+ "name": "externalId",
+ "unit": null,
+ "searchable": true,
+ "defaultValue": null,
+ "dataType": "STRING",
+ "length": 255
+ }
+ ],
+ "aspects": [],
+ "fileAssignments": [],
+ "etag": 1,
+ "_links": {
+ "self": {
+ "href": "{link}"
+ }
+ },
+ "id": "core.basicasset"
+}
+
+Basic Hierarchy¶
+Basic hierarchy types are the template for all hierarchy types. They are used for modeling physical, fixed assets, like premises, factories, or equipment to structure assets hierarchically and reduce complexity. The basic hierarchy type is an abstract type, so it is not possible to create assets from it.Example {
+ "parentTypeId": "core.basicasset",
+ "instantiable": false,
+ "tenantId": "core",
+ "name": "BasicHierarchy",
+ "description": "Base hierarchy type for the Asset Management Service.",
+ "scope": "public",
+ "variables": [
+ {
+ "name": "hierarchyModel",
+ "unit": null,
+ "searchable": true,
+ "defaultValue": null,
+ "dataType": "STRING",
+ "length": 255
+ }
+ ],
+ "aspects": [
+ {
+ "name": "contactPoint",
+ "aspectType": {
+ "id": "core.contactpoint",
+ "tenantId": "core",
+ "name": "ContactPoint",
+ "category": "static",
+ "scope": "public",
+ "description": "Contact point definition for basic asset hierarchy type.",
+ "variables": [
+ {
+ "name": "telephoneNumber",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "STRING",
+ "length": 255
+ },
+ {
+ "name": "faxNumber",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "STRING",
+ "length": 255
+ },
+ {
+ "name": "email",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "STRING",
+ "length": 255
+ },
+ {
+ "name": "contactType",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "STRING",
+ "length": 255
+ }
+ ],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ }
+ }
+ }
+ }
+ ],
+ "fileAssignments": [],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ },
+ "id": "core.basichierarchy"
+ }
+
+Root Hierarchy¶
+The root hierarchy type is the template for root types. These are used as the starting point of hierarchy models of a tenant's or subtenant's structure. When a tenant or subtenant is created, a root asset has to be created. All root types must be inherited from the root hierarchy type. The root hierarchy type is an abstract type, so it is not possible to create assets from it.Users cannot create assets derived from a root hierarchy type via Asset Management REST calls.Example {
+ "parentTypeId": "core.basichierarchy",
+ "instantiable": false,
+ "tenantId": "core",
+ "name": "RootHierarchy",
+ "description": "Root type for asset hierarchy.",
+ "scope": "public",
+ "variables": [],
+ "aspects": [],
+ "fileAssignments": [],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ },
+ "id": "core.roothierarchy"
+}
+
+Basic Enterprise¶
+This is the template, from which a tenant's root asset must be created.Example {
+ "parentTypeId": "core.roothierarchy",
+ "instantiable": true,
+ "tenantId": "core",
+ "name": "BasicEnterprise",
+ "description": "Basic Enterprise type for the Asset Management Service",
+ "scope": "public",
+ "variables": [
+ {
+ "name": "sameAs",
+ "unit": null,
+ "searchable": true,
+ "defaultValue": null,
+ "dataType": "STRING",
+ "length": 255
+ },
+ {
+ "name": "legalName",
+ "unit": null,
+ "searchable": true,
+ "defaultValue": null,
+ "dataType": "STRING",
+ "length": 255
+ },
+ {
+ "name": "organizationType",
+ "unit": null,
+ "searchable": true,
+ "defaultValue": null,
+ "dataType": "STRING",
+ "length": 255
+ },
+ {
+ "name": "url",
+ "unit": null,
+ "searchable": true,
+ "defaultValue": null,
+ "dataType": "STRING",
+ "length": 255
+ }
+ ],
+ "aspects": [],
+ "fileAssignments": [],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ },
+ "id": "core.basicenterprise"
+}
+
+Basic Subtenant¶
+This is the template, from which a subtenant's root asset must be created inside an existing tenant.Example {
+ "parentTypeId": "core.roothierarchy",
+ "instantiable": true,
+ "tenantId": "core",
+ "name": "BasicSubtenant",
+ "description": "SubTenant type for the Asset Management Service",
+ "scope": "public",
+ "variables": [
+ {
+ "name": "displayName",
+ "unit": null,
+ "searchable": true,
+ "defaultValue": null,
+ "dataType": "STRING",
+ "length": 255
+ }
+ ],
+ "aspects": [],
+ "fileAssignments": [],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ },
+ "id": "core.basicsubtenant"
+}
+
+Basic Site¶
+The basic site type is used as a template for a site like a factory, office, etc. The Modeling Assets Section illustrates how to use the basic site type.Example {
+ "parentTypeId": "core.basichierarchy",
+ "instantiable": true,
+ "tenantId": "core",
+ "name": "BasicSite",
+ "description": "Site type for creating asset hierarchy levels.",
+ "scope": "public",
+ "variables": [],
+ "aspects": [],
+ "fileAssignments": [],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ },
+ "id": "core.basicsite"
+}
+
+Basic Area¶
+The basic area is used as a template for an area inside a site, like a bottling area in a beer factory or a floor in an office building.Example {
+ "parentTypeId": "core.basichierarchy",
+ "instantiable": true,
+ "tenantId": "core",
+ "name": "BasicArea",
+ "description": "Area type for creating asset hierarchy levels.",
+ "scope": "public",
+ "variables": [],
+ "aspects": [],
+ "fileAssignments": [],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ }
+ "id": "core.basicarea"
+}
+
+Basic Agent¶
+The basic agent type is the template for the different types of boxes or agents. The basic agent type is an abstract type, so it is not possible to create assets from it.Example {
+ "parentTypeId": "core.basicasset",
+ "instantiable": false,
+ "tenantId": "core",
+ "name": "BasicAgent",
+ "description": "Basic agent type for the Asset Management Service.",
+ "scope": "public",
+ "variables": [],
+ "aspects": [
+ {
+ "name": "status",
+ "aspectType": {
+ "id": "core.agentstatus",
+ "tenantId": "core",
+ "name": "AgentOnlineStatus",
+ "category": "dynamic",
+ "scope": "public",
+ "description": "Online status of an agent typed asset.",
+ "variables": [
+ {
+ "name": "onlineStatus",
+ "unit": null,
+ "searchable": false,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "BOOLEAN",
+ "length": null
+ }
+ ],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ }
+ }
+ }
+ }
+ ],
+ "fileAssignments": [],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ }
+ "id": "core.basicagent"
+}
+
+MindConnect Nano¶
+This asset type is the template for MindConnect Nano connectivity elements.Example {
+ "parentTypeId": "core.basicagent",
+ "instantiable": true,
+ "tenantId": "core",
+ "name": "MindConnectNano",
+ "description": "MindConnect Nano Agent asset type",
+ "scope": "public",
+ "variables": [],
+ "aspects": [],
+ "fileAssignments": [],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ },
+ "id": "core.mcnano"
+}
+
+MindConnect Lib¶
+This asset type is the template for MindConnect Library connectivity elements.Example {
+ "parentTypeId": "core.basicagent",
+ "instantiable": true,
+ "tenantId": "core",
+ "name": "MindConnectLib",
+ "description": "MindConnect Lib Agent asset type",
+ "scope": "public",
+ "variables": [],
+ "aspects": [],
+ "fileAssignments": [],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ },
+ "id": "core.mclib"
+}
+
+MindConnect IoT 2040¶
+This asset type is the template for MindConnect IoT 2040 connectivity elements.Example {
+ "parentTypeId": "core.basicagent",
+ "instantiable": true,
+ "tenantId": "core",
+ "name": "MindConnectIoT2040",
+ "description": "MindConnect IoT 2040 Agent asset type",
+ "scope": "public",
+ "variables": [],
+ "aspects": [],
+ "fileAssignments": [],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ },
+ "id": "core.mciot2040"
+}
+
+MindConnect FB1500¶
+NoteThis basic type is deprecated. If you want to connect and represent the S7-1500, use the MindConnect Library.
+Example {
+ "parentTypeId": "core.basicagent",
+ "instantiable": true,
+ "tenantId": "core",
+ "name": "MindConnectFB1500",
+ "description": "MindConnect FB 1500 Agent asset type",
+ "scope": "public",
+ "variables": [],
+ "aspects": [],
+ "fileAssignments": [],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ },
+ "id": "core.mcfb1500"
+}
+
+MindConnect Integration¶
+Example {
+ "parentTypeId": "core.basicagent",
+ "instantiable": true,
+ "tenantId": "core",
+ "name": "MindConnectIntegration",
+ "description": "MindConnect Integration Agent asset type",
+ "scope": "public",
+ "variables": [],
+ "aspects": [],
+ "fileAssignments": [],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ },
+ "id": "core.mcintegration"
+}
+
+Industrial Edge¶
+Example {
+ "parentTypeId": "core.basicagent",
+ "instantiable": true,
+ "tenantId": "core",
+ "name": "IndustrialEdge",
+ "description": "Industrial Edge Agent asset type",
+ "scope": "public",
+ "variables": [],
+ "aspects": [],
+ "fileAssignments": [],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ },
+ "id": "core.industrialEdge"
+}
+
+Basic Device¶
+The basic device type is the template for machines or other assets to collect data from. Every device asset type is inherited from the basic device type. The basic device type is an abstract asset type, so it is not possible to create assets from it.Example {
+ "parentTypeId": "core.basicasset",
+ "instantiable": false,
+ "tenantId": "core",
+ "name": "BasicDevice",
+ "description": "Basic device asset type for the Asset Management Service.",
+ "scope": "public",
+ "variables": [
+ {
+ "name": "manufacturer",
+ "unit": null,
+ "searchable": true,
+ "defaultValue": null,
+ "dataType": "STRING",
+ "length": 255
+ }
+ ],
+ "aspects": [
+ {
+ "name": "status",
+ "aspectType": {
+ "id": "core.assetstatus",
+ "tenantId": "core",
+ "name": "DeviceAssetStatus",
+ "category": "static",
+ "scope": "public",
+ "description": "Status of a device typed asset.",
+ "variables": [
+ {
+ "name": "connection_timestamp",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "TIMESTAMP",
+ "length": null
+ },
+ {
+ "name": "connection",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "INT",
+ "length": null
+ },
+ {
+ "name": "health_unconfirmed",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "INT",
+ "length": null
+ },
+ {
+ "name": "health_timestamp",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "TIMESTAMP",
+ "length": null
+ },
+ {
+ "name": "health",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "INT",
+ "length": null
+ },
+ {
+ "name": "health_unconfirmed_timestamp",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "TIMESTAMP",
+ "length": null
+ }
+ ],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ }
+ }
+ }
+ }
+ ],
+ "fileAssignments": [],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ },
+ "id": "core.basicdevice"
+}
+
+Basic Sinumerik Asset¶
+The basic Sinumeric asset type is the template for Sinumerik devices. The basic Sinumerik asset type is an abstract asset type, so it is not possible to create assets from it.Example {
+ "parentTypeId": "core.basicdevice",
+ "instantiable": false,
+ "tenantId": "core",
+ "name": "BasicSinumerikAsset",
+ "description": "Basic asset type for Sinumerik devices.",
+ "scope": "public",
+ "variables": [],
+ "aspects": [
+ {
+ "name": "CH1_BasicConfig",
+ "aspectType": {
+ "id": "core.sinumerikbasicconfig",
+ "tenantId": "core",
+ "name": "SinumerikBasicConfig",
+ "category": "dynamic",
+ "scope": "public",
+ "description": "CH1_BasicConfig for Sinumerik typed asset.",
+ "variables": [
+ {
+ "name": "NCProgramStatus",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "DOUBLE",
+ "length": null
+ },
+ {
+ "name": "Spindleoverride",
+ "unit": "%",
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "DOUBLE",
+ "length": null
+ },
+ {
+ "name": "StopCond",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "DOUBLE",
+ "length": null
+ },
+ {
+ "name": "ProtectionLevel",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "DOUBLE",
+ "length": null
+ },
+ {
+ "name": "NCProgram",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "STRING",
+ "length": 255
+ },
+ {
+ "name": "Opmode",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "DOUBLE",
+ "length": null
+ },
+ {
+ "name": "NrOfAlarms",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "DOUBLE",
+ "length": null
+ },
+ {
+ "name": "Feedoverride",
+ "unit": "%",
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "DOUBLE",
+ "length": null
+ }
+ ],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ }
+ }
+ }
+ },
+ {
+ "name": "Alarms",
+ "aspectType": {
+ "id": "core.sinumerikbasicalarms",
+ "tenantId": "core",
+ "name": "SinumerikBasicAlarms",
+ "category": "dynamic",
+ "scope": "public",
+ "description": "Alarms for Sinumerik typed asset.",
+ "variables": [
+ {
+ "name": "CurrentAlarms",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "BIG_STRING",
+ "length": 100000
+ }
+ ],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ }
+ }
+ }
+ },
+ {
+ "name": "MachineModel",
+ "aspectType": {
+ "id": "core.sinumerikbasicmachinemodel",
+ "tenantId": "core",
+ "name": "SinumerikBasicMachineModel",
+ "category": "dynamic",
+ "scope": "public",
+ "description": "Machinemodel for Sinumerik typed asset.",
+ "variables": [
+ {
+ "name": "Data",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "BIG_STRING",
+ "length": 100000
+ }
+ ],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ }
+ }
+ }
+ },
+ {
+ "name": "CH1_MachineStatus",
+ "aspectType": {
+ "id": "core.sinumerikbasicmachinestatus",
+ "tenantId": "core",
+ "name": "SinumerikBasicMachineStatus",
+ "category": "dynamic",
+ "scope": "public",
+ "description": "CH1_MachineStatus for Sinumerik typed asset.",
+ "variables": [
+ {
+ "name": "MachineStatus",
+ "unit": "%",
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "DOUBLE",
+ "length": null
+ }
+ ],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ }
+ }
+ }
+ },
+ {
+ "name": "Startup",
+ "aspectType": {
+ "id": "core.sinumerikbasicstartup",
+ "tenantId": "core",
+ "name": "SinumerikBasicStartup",
+ "category": "dynamic",
+ "scope": "public",
+ "description": "Startup for Sinumerik typed asset.",
+ "variables": [
+ {
+ "name": "shutdownTime",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "STRING",
+ "length": 255
+ },
+ {
+ "name": "bootTime",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "STRING",
+ "length": 255
+ }
+ ],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ }
+ }
+ }
+ },
+ {
+ "name": "AgentOnlineStatus",
+ "aspectType": {
+ "id": "core.agentstatus",
+ "tenantId": "core",
+ "name": "AgentOnlineStatus",
+ "category": "dynamic",
+ "scope": "public",
+ "description": "Online status of an agent typed asset.",
+ "variables": [
+ {
+ "name": "onlineStatus",
+ "unit": null,
+ "searchable": false,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "BOOLEAN",
+ "length": null
+ }
+ ],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ }
+ }
+ }
+ }
+ ],
+ "fileAssignments": [],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ },
+ "id": "core.basicsinumerikasset"
+}
+
+Basic Application¶
+The basic application type is the template for applications, which ingest data into Insights Hub. The basic application type is an abstract asset type, so it is not possible to create assets from it.Example {
+ "parentTypeId": "core.basicasset",
+ "instantiable": false,
+ "tenantId": "core",
+ "name": "BasicApplication",
+ "description": "Basic asset type for Applications",
+ "scope": "public",
+ "variables": [],
+ "aspects": [],
+ "fileAssignments": [],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ },
+ "id": "core.basicapplication"
+}
+
+Edge Basic Application¶
+This asset type is the template for all Edge applications. The Edge basic application type is an abstract asset type, so it is not possible to create assets from it.Example {
+ "parentTypeId": "core.basicapplication",
+ "instantiable": false,
+ "tenantId": "core",
+ "name": "EdgeBasicApplication",
+ "description": "Represents the root asset type for all edge applications",
+ "scope": "public",
+ "variables": [],
+ "aspects": [
+ {
+ "name": "status",
+ "aspectType": {
+ "id": "core.assetstatus",
+ "tenantId": "core",
+ "name": "DeviceAssetStatus",
+ "category": "static",
+ "scope": "public",
+ "description": "Status of a device typed asset.",
+ "variables": [
+ {
+ "name": "connection_timestamp",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "TIMESTAMP",
+ "length": null
+ },
+ {
+ "name": "connection",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "INT",
+ "length": null
+ },
+ {
+ "name": "health_unconfirmed",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "INT",
+ "length": null
+ },
+ {
+ "name": "health_timestamp",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "TIMESTAMP",
+ "length": null
+ },
+ {
+ "name": "health",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "INT",
+ "length": null
+ },
+ {
+ "name": "health_unconfirmed_timestamp",
+ "unit": null,
+ "searchable": true,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "TIMESTAMP",
+ "length": null
+ }
+ ],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ }
+ }
+ }
+ }
+ ],
+ "fileAssignments": [],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ },
+ "id": "core.edgebasicapplication"
+}
+
+Edge Analytics Application¶
+This asset type is the template for the Edge Analytics Application present on the Edge device.Example {
+ "parentTypeId": "core.edgebasicapplication",
+ "instantiable": true,
+ "tenantId": "core",
+ "name": "EdgeAnalyticsApplication",
+ "description": "Represents the Edge Analytics Application present on the Edge device",
+ "scope": "public",
+ "variables": [],
+ "aspects": [
+ {
+ "name": "EdgeAnalyticsApplicationStatus",
+ "aspectType": {
+ "id": "core.edgeanalyticsapplicationstatus",
+ "tenantId": "core",
+ "name": "EdgeAnalyticsApplicationStatus",
+ "category": "dynamic",
+ "scope": "public",
+ "description": "Status of the Edge Analytics Application",
+ "variables": [
+ {
+ "name": "CPU_usage",
+ "unit": "%",
+ "searchable": false,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "INT",
+ "length": null
+ },
+ {
+ "name": "Project_state",
+ "unit": null,
+ "searchable": false,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "BOOLEAN",
+ "length": null
+ },
+ {
+ "name": "Server_state",
+ "unit": null,
+ "searchable": false,
+ "qualityCode": false,
+ "defaultValue": null,
+ "dataType": "BOOLEAN",
+ "length": null
+ }
+ ],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ }
+ }
+ }
+ }
+ ],
+ "fileAssignments": [],
+ "etag": {etagValue},
+ "_links": {
+ "self": {
+ "href": "{link}"
+ },
+ "parent": {
+ "href": "{link}"
+ }
+ },
+ "id": "core.edgeanalyticsapplication"
+}
+
+Open Edge Device¶
+This asset type is the template for the Open Edge device.Example {
+ "parentTypeId": "core.basicasset",
+ "instantiable": false,
+ "tenantId": "core",
+ "name": "EdgeDevice",
+ "description": "Open Edge device asset type for Asset Management Service.",
+ "scope": "public",
+ "variables": [],
+ "aspects": [],
+ "fileAssignments": [],
+ "sharing": {
+ "modes": []
+ },
+ "etag": 0,
+ "_links": {
+ "self": {
+ "href": "https://gateway.eu1-int.mindsphere.io/api/assetmanagement/v3/assettypes/core.edgedevice"
+ },
+ "parent": {
+ "href": "https://gateway.eu1-int.mindsphere.io/api/assetmanagement/v3/assettypes/core.basicasset"
+ }
+ },
+ "id": "core.edgedevice"
+}

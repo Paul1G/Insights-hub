@@ -1,0 +1,39 @@
+/* Inline brand block projected into <ix-application-header>'s `slot="logo"`.
+ * Replaces the iX header's built-in `name` layout with a single horizontal row:
+ *
+ *   LOGO  |  App Name
+ *
+ * Mirrors the proportions used in the CREATE management app: the app name sits
+ * slightly smaller than the 32px brand logo, separated by a 1px rule. */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Colours follow iX's header token so the brand row flips with the colour
+ * schema (white-on-dark in dark mode, dark-on-white in light mode). A
+ * hardcoded white here would make the name vanish on a light header. */
+.separator {
+  display: inline-block;
+  width: 1px;
+  height: 1.5rem;
+  background-color: var(--theme-app-header--color);
+}
+
+.name {
+  font-size: 0.875rem;
+  line-height: 1;
+  font-weight: 400;
+  color: var(--theme-app-header--color);
+}
+
+/* The logo links to the start page. color: inherit + no underline so it never
+ * picks up link styling (the logo keeps its own colours); the link stays
+ * keyboard-focusable for accessibility. */
+.logoLink {
+  display: inline-flex;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+}

@@ -1,0 +1,28 @@
+/* Dialog bodies: a token-spaced stack; long messages wrap (Layout Contract §10). */
+.title {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-3);
+  min-width: 0;
+  width: 100%;
+}
+
+.message {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-2);
+  min-width: 0;
+  max-height: 50vh;
+  overflow: auto;
+}

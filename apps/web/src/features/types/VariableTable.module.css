@@ -1,0 +1,79 @@
+/* Variable editor rows: each variable is a bordered block with a header line
+   and a wrapping field grid (fluid, min-width: 0, Layout Contract §10). */
+.table {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-3);
+  min-width: 0;
+}
+
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-2);
+  min-width: 0;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-2);
+  padding: var(--theme-space-2);
+  border: 1px solid var(--theme-color-soft-bdr);
+  border-radius: var(--theme-default-border-radius, 4px);
+  background: var(--theme-color-1);
+  min-width: 0;
+}
+
+.lockedRow {
+  border-inline-start: 3px solid var(--theme-color-neutral);
+}
+
+.rowHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--theme-space-1);
+  min-width: 0;
+}
+
+.rowTitle {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--theme-space-1);
+  min-width: 0;
+}
+
+.rowActions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--theme-space--1);
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(12rem, 100%), 1fr));
+  gap: var(--theme-space-2);
+  align-items: start;
+  min-width: 0;
+}
+
+.flags {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-1);
+  padding-top: var(--theme-space-3);
+  min-width: 0;
+}
+
+.text,
+.note {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}

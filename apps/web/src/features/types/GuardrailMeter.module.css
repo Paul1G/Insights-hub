@@ -1,0 +1,66 @@
+/* Guardrail meters: fluid tiles in a container grid (Layout Contract §10). */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr));
+  gap: var(--theme-space-3);
+  min-width: 0;
+}
+
+.meter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space--1);
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--theme-space-1);
+  min-width: 0;
+}
+
+.label,
+.status {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.value {
+  white-space: nowrap;
+}
+
+.track {
+  width: 100%;
+  height: var(--theme-space-1);
+  border-radius: 999px;
+  background: var(--theme-color-component-1);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.ok {
+  background: var(--theme-color-success);
+}
+
+.near {
+  background: var(--theme-color-primary);
+}
+
+.warning {
+  background: var(--theme-color-warning);
+}
+
+.alarm {
+  background: var(--theme-color-alarm);
+}
+
+.info {
+  background: var(--theme-color-info);
+}

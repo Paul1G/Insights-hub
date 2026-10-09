@@ -1,0 +1,39 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Vendored @siemens-ix/corporate-theme prebuilt tree. The blanket `dist`
+# rule above also matches vendor/brand-theme/dist/, which we DO want
+# committed so the package.json `file:` dep resolves without depending on
+# the Siemens internal npm registry (unreachable from the sandbox). Mirrors
+# the workspace-root rule in create-services. Without this, the brand theme
+# CSS ships as an empty stub and `data-ix-theme="brand"` renders unstyled.
+!vendor/brand-theme/dist/
+!vendor/brand-theme/dist/**
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.tsbuildinfo
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+public/theme

@@ -1,0 +1,24 @@
+# pnpm 11 gates dependency build scripts behind explicit review. esbuild and
+# @swc/core (pulled by Vite + @vitejs/plugin-react-swc) have install scripts;
+# without an entry here pnpm prints "Ignored build scripts… run pnpm
+# approve-builds" and, with strictDepBuilds on (default), a non-frozen install
+# exits non-zero — which breaks `pnpm run build`'s pre-run dep check. pnpm 11
+# reads this ONLY from pnpm-workspace.yaml (the package.json `pnpm` field and
+# the old ignoredBuiltDependencies key were both removed in v11).
+allowBuilds:
+  '@swc/core': true
+  esbuild: true
+  # core-js (pulled by jspdf) only prints a funding banner in postinstall.
+  core-js: false
+# @stencil/core (iX's compiler base, pulled transitively via @siemens/ix-icons)
+# ships an over-broad `declare module '*.css'` ambient type that also matches
+# `*.module.css` and shadows Vite's CSS-Modules typing under React — every
+# `import styles from './x.module.css'` then types as `() => string`. The patch
+# in patches/ trims that declaration. The key is intentionally VERSION-LESS
+# (pnpm >= 9.4 feature): the patch applies to whatever @stencil/core version
+# resolves, so an iX patch/minor bump that moves the Stencil version does NOT
+# silently drop the patch. Re-pin only if the hunk ever fails to apply cleanly.
+# A committed pnpm-lock.yaml keeps the resolved version stable across sandboxes;
+# install with `pnpm install --frozen-lockfile`.
+patchedDependencies:
+  '@stencil/core': patches/@stencil__core@4.43.5.patch

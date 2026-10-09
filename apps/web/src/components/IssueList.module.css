@@ -1,0 +1,60 @@
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space-1);
+  min-width: 0;
+}
+
+.item {
+  min-width: 0;
+}
+
+.row,
+.button {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--theme-space-1);
+  min-width: 0;
+  width: 100%;
+}
+
+.button {
+  background: none;
+  border: 0;
+  padding: var(--theme-space--1);
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  border-radius: var(--theme-default-border-radius, 4px);
+}
+
+.button:hover {
+  background: var(--theme-color-ghost--hover);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--theme-color-focus-bdr);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--theme-space--2);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.counts {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--theme-space-1);
+}
+
+.count {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--theme-space--2);
+}
